@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Shader Files">
+      <UniqueIdentifier>{c75d74c3-42d8-44d9-9410-eddeaadd91b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Planets">
+      <UniqueIdentifier>{c98e6b61-1eb1-405c-9e28-cde0cefe0237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Planets">
+      <UniqueIdentifier>{938e634c-2321-40c1-bc3f-45cbf30ce769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Moons">
+      <UniqueIdentifier>{ed9b0c1f-1522-4958-a15c-00b55f453374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Asteroids">
+      <UniqueIdentifier>{012cf7b7-56a8-4746-a706-86154034c10d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Moons">
+      <UniqueIdentifier>{8d660b24-2c1b-45e8-a5b6-0a8c982c6384}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sv68-2021-2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="orbit.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="orbit.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="asteroids.frag">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="asteroids.vert">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="jupiter.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="jupiter.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="earth.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="earth.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="mars.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="mars.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="mercury.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="mercury.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="kuiper.frag">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="kuiper.vert">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="oortCloud.frag">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="oortCloud.vert">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="moon.frag">
+      <Filter>Source Files\Shader Files\Moons</Filter>
+    </None>
+    <None Include="moon.vert">
+      <Filter>Source Files\Shader Files\Moons</Filter>
+    </None>
+    <None Include="neptune.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="neptune.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="pluto.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="pluto.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="saturn.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="saturn.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="sun.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="sun.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="uranus.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="uranus.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="venus.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="venus.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="earth-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="jupiter-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="mars-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="mercury-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="neptune-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="pluto-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="saturn-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="sun-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="uranus-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="venus-texture.jpeg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="moon-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="deimos-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="europa-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="ganymede-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="io-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="phobos-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="ariel-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="callisto-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="iapetus-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="miranda-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="rhea-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="titan-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="triton-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="umbriel-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

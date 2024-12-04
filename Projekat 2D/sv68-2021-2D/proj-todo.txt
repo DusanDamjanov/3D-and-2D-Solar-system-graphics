@@ -1,0 +1,29 @@
+model suncevog sistema sa animacijama okretanja oko sunca i rotacijama.
+1. Ograničite izvršavanje na 60 frejmova u sekundi	--->DONE
+2. Prikažite Sunce, sve planete (uključujući i patuljke), mjesece i 3
+pojasa asteroida.	--->DONE
+
+3. Neka sve planete imaju adekvatne prikaze (Saturn sa prstenom, itd) --->DONE
+4. Kada se kursor postavi na objekte u sistemu, da se na dnu ekrana ispiše
+slovima njihov naziv, a ako se klikne na njih, da se ispišu na ekranu i
+detaljne informacije (naziv, masa, veličina, tip, random trivija i slično)
+uz uvećanu sliku te planete.
+5. Neka se sve planete kreću korektnim orbitama i brzinama.	--->DONE
+6. Neka orbite planeta budu vidljive, i neka mogu da se sakriju/prikažu
+preko tastature. 	--->DONE
+7. Dodajte par brzina kretanja simulacije koje mogu da se mijenjaju na
+taster, kao i pauziranje. 	--->DONE
+
+
+extra task:
+1. Probajte da
+napravite i da se planete okreću oko sebe. Imate biblioteku GLM koju
+možete iskoristiti za to i poglavlje transformacija na learnOpenGL-u, ali
+ako ne uspijete, ne očajavajte.	--->DONE ALI PROVERI JOS JEDNOM DAL MOZE MOZDA MALO BOLJE??
+
+2. Možete ga realizovati sa fizikom (n-body problem) ali i
+bez nje.
+
+FIXME: JEDNA JE OSTALA SJEBANA OSTALE RADE!!! AL ISPROVERAVAJ TE TEKSTURE SVE DOBRO
+TODO: PROBAJ DA PREBACIS SUN2D KLASU DA I ONA BUDE PLANET2D
+TODO: DA LI U BRZINE DA PROBAS DA NAMESTIS DA KAD SE MENJA KAO BRZINA ROTACIJA ORBITA, DA LI DA SE MENJA I BRZINA ROTACIJA PLANETA OKO SVOJE OSE????
