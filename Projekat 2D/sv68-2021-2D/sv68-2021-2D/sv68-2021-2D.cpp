@@ -53,7 +53,6 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
     return window;
 }
 
-
 // Funkcija za učitavanje šejdera
 std::string loadShaderSource(const char* filePath) {
     std::ifstream file(filePath);
@@ -125,21 +124,26 @@ void limitFPS(std::chrono::time_point<std::chrono::high_resolution_clock>& lastF
     lastFrameTime = high_resolution_clock::now();
 }
 
-//Funkcija za podešavanje ortografske projekcije:
-glm::mat4 calculateProjection(int screenWidth, int screenHeight, float zoomLevel) {
-    float aspectRatio = static_cast<float>(screenWidth) / screenHeight;
-    return glm::ortho(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel, -1.0f, 1.0f);
-}
-
 //Funkcija za izracunavanje projekcije
 glm::mat4 calculateProjection(int screenWidth, int screenHeight, float zoomLevel, float offsetX, float offsetY) {
+    // Izračunavanje aspect ratio-a ekrana
     float aspectRatio = static_cast<float>(screenWidth) / screenHeight;
-    return glm::ortho(-aspectRatio * zoomLevel + offsetX,
-        aspectRatio * zoomLevel + offsetX,
-        -zoomLevel + offsetY,
-        zoomLevel + offsetY,
-        -1.0f, 1.0f);
+
+    // Obrnuti faktor zooma (veći zoomLevel = bliže)
+    float zoomFactor = 1.0f / zoomLevel;
+
+    // Kreiranje ortografske projekcije sa zoom i offset parametrima
+    return glm::ortho(
+        (-aspectRatio * 0.5f * zoomFactor) + offsetX,  // Leva granica
+        (aspectRatio * 0.5f * zoomFactor) + offsetX,   // Desna granica
+        (-0.5f * zoomFactor) + offsetY,               // Donja granica
+        (0.5f * zoomFactor) + offsetY,                // Gornja granica
+        -1.0f,                                        // Z-blizina
+        1.0f                                          // Z-daljina
+    );
 }
+
+
 
 // Funkcija za učitavanje teksture
 GLuint loadTexture(const char* filePath) {
@@ -334,6 +338,29 @@ public:
 
         glBindVertexArray(0);
     }
+
+    glm::vec2 getScreenPosition() {
+        // Računanje trenutne pozicije Sunca uzimajući u obzir offsete
+        return glm::vec2(x, y);
+    }
+
+    struct SunBounds {      //poenta strukture je najvise da vrati radijus povecan ili umanjen zavisnosti od zooma.
+        glm::vec2 center; // Centar površine
+        float radius;     // Radijus površine
+    };
+
+    SunBounds getSunBounds(float zoomLevel) {
+        // Računaj trenutnu poziciju Sunca uzimajući u obzir offsete
+        glm::vec2 sunScreenPos = getScreenPosition();
+
+        // Skaliraj veličinu Sunca prema zoom nivou
+        float scaledSize = size * zoomLevel;
+
+        // Vrati centar i radijus kao strukturu
+        return SunBounds{ sunScreenPos, scaledSize };
+    }
+
+
 };
 
 //klasa za Planete
@@ -500,8 +527,24 @@ public:
         float y = semiMinorAxis * sin(angle);
         return glm::vec2(x, y);
     }
-};
 
+    struct PlanetBounds {      //poenta strukture je najvise da vrati radijus povecan ili umanjen zavisnosti od zooma.
+        glm::vec2 center; // Centar površine
+        float radius;     // Radijus površine
+    };
+
+    PlanetBounds getPlanetBounds(float zoomLevel) {
+        // Računaj trenutnu poziciju Sunca uzimajući u obzir offsete
+        glm::vec2 sunScreenPos = getPosition();
+
+        // Skaliraj veličinu Sunca prema zoom nivou
+        float scaledSize = size * zoomLevel;
+
+        // Vrati centar i radijus kao strukturu
+        return PlanetBounds{ sunScreenPos, scaledSize };
+    }
+
+};
 
 class Moon2D {
 public:
@@ -614,7 +657,6 @@ public:
         }
     }
 };
-
 
 class AsteroidBelt {
 public:
@@ -758,6 +800,151 @@ bool isOneClick(double& lastKeyPressTime) {
     return true;
 }
 
+//Funkcija za transformaciju koordinata misa
+glm::vec2 getMouseWorldPosition(GLFWwindow* window, int screenWidth, int screenHeight, glm::mat4& projection) {
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+
+    // Normalizovane koordinate miša (od -1 do 1)
+    float normalizedX = ((float)mouseX / (float)screenWidth) * 2.0f - 1.0f;
+    float normalizedY = 1.0f - ((float)mouseY / (float)screenHeight) * 2.0f;
+
+    // Vektor u "ekran" prostoru
+    glm::vec4 screenPos = glm::vec4(normalizedX, normalizedY, 0.0f, 1.0f);
+
+    // Inverzna projekcija da dobijemo svetovni prostor
+    glm::mat4 inverseProjection = glm::inverse(projection);
+    glm::vec4 worldPos = inverseProjection * screenPos;
+
+    // Vraćamo X i Y svetovne koordinate
+    return glm::vec2(worldPos.x, worldPos.y);
+}
+
+
+bool isMouseOverPlanet(const glm::vec2& mousePos, const Planet2D::PlanetBounds objectPos, float zoomLevel) {
+    float dx = mousePos.x - objectPos.center.x;
+    float dy = mousePos.y - objectPos.center.y;
+
+    float scaledRadius = objectPos.radius * zoomLevel;
+
+
+    if (dx * dx + dy * dy <= objectPos.radius * objectPos.radius) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+bool isMouseOverSun(const glm::vec2& mousePos, const Sun2D::SunBounds objectPos, float zoomLevel) {
+    float dx = mousePos.x - objectPos.center.x;
+    float dy = mousePos.y - objectPos.center.y;
+
+    float scaledRadius = objectPos.radius * zoomLevel;
+
+
+    if (dx * dx + dy * dy <= objectPos.radius * objectPos.radius) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, float zoomLevel, Sun2D& sun, Planet2D& earth, Planet2D & venus,
+    Planet2D& mars, Planet2D& jupiter, Planet2D& saturn, Planet2D& uranus, Planet2D& neptune, Planet2D& pluto, glm::mat4 projection) {
+    glm::vec2 mouseWorldPos = getMouseWorldPosition(window, screenWidth, screenHeight, projection);
+    
+    //Proveri za sunce
+    Sun2D::SunBounds sunBounds = sun.getSunBounds(zoomLevel);
+    if (isMouseOverSun(mouseWorldPos, sunBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    // Proveri za planete
+    Planet2D::PlanetBounds earthBounds = earth.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, earthBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds venusBounds = venus.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, venusBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds marsBounds = mars.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, marsBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds jupiterBounds = jupiter.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, jupiterBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds saturnBounds = saturn.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, saturnBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds uranusBounds = uranus.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, uranusBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds neptuneBounds = neptune.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, neptuneBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+    Planet2D::PlanetBounds plutoBounds = pluto.getPlanetBounds(zoomLevel);
+    if (isMouseOverPlanet(mouseWorldPos, plutoBounds, zoomLevel)) {
+        std::cout << "iznad je" << "\n";
+    }
+    else {
+        std::cout << "nije" << "\n";
+    }
+
+}
+
+
+void renderText(const std::string& text, float x, float y, float scale, glm::vec3 color, GLuint textShaderProgram) {
+    // Aktiviraj šejder za tekst
+    glUseProgram(textShaderProgram);
+
+    // Setuj uniforme za boju teksta
+    GLint colorLoc = glGetUniformLocation(textShaderProgram, "textColor");
+    glUniform3f(colorLoc, color.x, color.y, color.z);
+
+    // Postavi poziciju i skaliranje teksta
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+    model = glm::scale(model, glm::vec3(scale, scale, 1.0f));
+    GLint modelLoc = glGetUniformLocation(textShaderProgram, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+    // Renderuj tekst ovde... (npr. kroz VAO/VBO za fontove)
+}
+
+
+
 int main() {
     int screenWidth = 1800, screenHeight = 950;
 
@@ -765,22 +952,30 @@ int main() {
     if (!window) return -1;
 
     double lastClickTime = glfwGetTime();
-    float zoomLevel = 1.5f; // Početni nivo zooma
+    float zoomLevel = 1.0f; // Početni nivo zooma
     float minZoom = 5.0f;   //kolko maximalno mozes da umanjis
     float maxZoom = 0.2f;   //kolko maximalno mozes da uvecas
     float offsetX = 0.0f; // Ofset za horizontalno pomeranje
     float offsetY = 0.0f; // Ofset za vertikalno pomeranje
     float panSpeed = 0.05f; //brzina pomeranja pogleda
 
-    bool orbitsPresent = true;
+    bool orbitsPresent = true;  //boolean da li ce orbite biti prikazane
 
-    // Faktor ubrzanja animacije
-    float speedMultiplier = 1.0f;
+    float speedMultiplier = 1.0f;    // Faktor ubrzanja animacije
+
 
     // Kreiranje ortografske projekcije
     float aspectRatio = static_cast<float>(screenWidth) / screenHeight;
-    glm::mat4 projection = glm::ortho(-aspectRatio * 1.5f, aspectRatio * 1.5f, -1.5f, 1.5f, -1.0f, 1.0f);
 
+    // Kreiranje ortografske projekcije koja koristi dimenzije ekrana
+    glm::mat4 projection = glm::ortho(
+        -screenWidth / 2.0f * zoomLevel,  // Leva granica
+        screenWidth / 2.0f * zoomLevel,  // Desna granica
+        -screenHeight / 2.0f * zoomLevel, // Donja granica
+        screenHeight / 2.0f * zoomLevel, // Gornja granica
+        -1.0f,  // Z-blizina
+        1.0f   // Z-daljina
+    );
 
     //ucitavanje svih sejdera za planete
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
@@ -829,7 +1024,7 @@ int main() {
     Moon2D triton(neptune, 0.15f, 0.03f, 120.0f, moonProgram, "triton-texture.jpg"); // Triton - Neptun
     
     AsteroidBelt asteroidBelt(1000, 0.35f, 0.45f); // 1000 asteroida između Marsa i Jupitera
-    AsteroidBelt kuiperBelt(1500, 1.5f, 2.0f); // 1500 objekata između Neptuna i Plutona
+    AsteroidBelt kuiperBelt(1500, 1.5f, 2.0f);     // 1500 objekata između Neptuna i Plutona
     OortCloud oortCloud(5000, 1.8f, 2.5f); 
 
 
@@ -839,15 +1034,21 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         glm::mat4 projection = calculateProjection(screenWidth, screenHeight, zoomLevel, offsetX, offsetY);
 
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+            mouseHoverDetection(window, screenWidth, screenHeight, zoomLevel, sun, earth, venus, mars, jupiter, saturn, uranus, neptune, pluto, projection);
+        }
+
         //ZUMIRANJE
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
-            zoomLevel -= 0.01f; // Zumiraj
+            zoomLevel += 0.01f; // Zumiraj
             if (zoomLevel < maxZoom) zoomLevel = maxZoom; // Minimalni zoom
+            std::cout << "zoom level nakon zumiranja: " << zoomLevel <<"\n";
         }
 
         if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
-            zoomLevel += 0.01f; // Odzumiraj
+            zoomLevel -= 0.01f; // Odzumiraj
             if (zoomLevel > minZoom) zoomLevel = minZoom; // Maksimalni zoom
+            std::cout << "zoom level nakon odzumiranja: " << zoomLevel << "\n";
         }
 
         //GASENJE
@@ -859,18 +1060,24 @@ int main() {
         //POMERANJE PO EKRANU
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
             offsetY += panSpeed * zoomLevel; // Pomeranje nagore
+            std::cout << "Offset y" << offsetY << "\n";
         }
 
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
             offsetY -= panSpeed * zoomLevel; // Pomeranje nadole
+            std::cout << "Offset y" << offsetY << "\n";
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
             offsetX -= panSpeed * zoomLevel; // Pomeranje ulevo
+            std::cout << "Offset x" << offsetX << "\n";
+
         }
 
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
             offsetX += panSpeed * zoomLevel; // Pomeranje udesno
+            std::cout << "Offset x" << offsetX << "\n";
+
         }
 
         //ORBITE ON/OFF
@@ -900,6 +1107,7 @@ int main() {
                 }
             }
         }
+
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             if (!isOneClick(lastClickTime)) {
                 if (speedMultiplier == 0.0) {
