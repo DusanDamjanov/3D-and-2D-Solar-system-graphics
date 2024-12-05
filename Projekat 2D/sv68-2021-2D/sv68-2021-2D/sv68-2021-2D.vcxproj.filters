@@ -31,6 +31,9 @@
     <Filter Include="Resource Files\Moons">
       <UniqueIdentifier>{8d660b24-2c1b-45e8-a5b6-0a8c982c6384}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Trivia">
+      <UniqueIdentifier>{b24e9c7c-f602-4067-9ba7-031176c3669a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sv68-2021-2D.cpp">
@@ -129,6 +132,18 @@
     <None Include="venus.vert">
       <Filter>Source Files\Shader Files\Planets</Filter>
     </None>
+    <None Include="text.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="text.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="details.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="details.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="earth-texture.jpg">
@@ -203,5 +218,40 @@
     <Image Include="umbriel-texture.jpg">
       <Filter>Resource Files\Moons</Filter>
     </Image>
+    <Image Include="earth-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="jupiter-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="mars-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="mercury-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="neptune-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="pluto-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="saturn-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="sun-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="uranus-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+    <Image Include="venus-trivia.png">
+      <Filter>Resource Files\Trivia</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="LiberationSans-Regular.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

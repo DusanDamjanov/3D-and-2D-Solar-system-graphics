@@ -7,7 +7,7 @@ pojasa asteroida.	--->DONE
 4. Kada se kursor postavi na objekte u sistemu, da se na dnu ekrana ispiše
 slovima njihov naziv, a ako se klikne na njih, da se ispišu na ekranu i
 detaljne informacije (naziv, masa, veličina, tip, random trivija i slično)
-uz uvećanu sliku te planete.
+uz uvećanu sliku te planete. 	--->DONE
 5. Neka se sve planete kreću korektnim orbitama i brzinama.	--->DONE
 6. Neka orbite planeta budu vidljive, i neka mogu da se sakriju/prikažu
 preko tastature. 	--->DONE
@@ -24,5 +24,11 @@ ako ne uspijete, ne očajavajte.	--->DONE ALI PROVERI JOS JEDNOM DAL MOZE MOZDA 
 2. Možete ga realizovati sa fizikom (n-body problem) ali i
 bez nje.
 
-FIXME: JEDNA JE OSTALA SJEBANA OSTALE RADE!!! AL ISPROVERAVAJ TE TEKSTURE SVE DOBRO
+FIXME: NAMESTI USLOVE DA KAD JEDNOM PRITISNES SE POJAVI TEKSTURA, KAD ONDA SLEDECI PUT PRITISNES SE ONA NE POJAVI...BKV DA KO BOOLEAN MENJAS OCE SE PRIKAZATI IL NECE..TO JE ZA ONAJ INFOBOX
+FIXME: JEDNA JE OSTALA SJEBANA OSTALE RADE!!! AL ISPROVERAVAJ TE TEKSTURE SVE DOBRO --->DONE
 TODO: PROBAJ DA PREBACIS SUN2D KLASU DA I ONA BUDE PLANET2D
+
+EXTRA TASKS (SREDI PRVO SVE OVO GORE)
+1. NAMESTI DA SE MESECEVA IMENA PRIKAZUJU PRI HOVERU
+2. NAMESTI TRIVIE ZA MESECE
+3. NAMESTI MOZDA NEKU SLIKU POZADINE JOS BOLJU
