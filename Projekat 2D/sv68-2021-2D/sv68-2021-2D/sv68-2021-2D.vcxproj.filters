@@ -78,16 +78,10 @@
     <None Include="mercury.vert">
       <Filter>Source Files\Shader Files\Planets</Filter>
     </None>
-    <None Include="kuiper.frag">
+    <None Include="kuiper-oort.frag">
       <Filter>Source Files\Shader Files\Asteroids</Filter>
     </None>
-    <None Include="kuiper.vert">
-      <Filter>Source Files\Shader Files\Asteroids</Filter>
-    </None>
-    <None Include="oortCloud.frag">
-      <Filter>Source Files\Shader Files\Asteroids</Filter>
-    </None>
-    <None Include="oortCloud.vert">
+    <None Include="kuiper-oort.vert">
       <Filter>Source Files\Shader Files\Asteroids</Filter>
     </None>
     <None Include="moon.frag">

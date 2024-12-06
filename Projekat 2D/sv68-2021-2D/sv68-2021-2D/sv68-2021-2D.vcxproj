@@ -144,8 +144,8 @@
     <None Include="earth.vert" />
     <None Include="jupiter.frag" />
     <None Include="jupiter.vert" />
-    <None Include="kuiper.frag" />
-    <None Include="kuiper.vert" />
+    <None Include="kuiper-oort.frag" />
+    <None Include="kuiper-oort.vert" />
     <None Include="mars.frag" />
     <None Include="mars.vert" />
     <None Include="mercury.frag" />
@@ -154,8 +154,6 @@
     <None Include="moon.vert" />
     <None Include="neptune.frag" />
     <None Include="neptune.vert" />
-    <None Include="oortCloud.frag" />
-    <None Include="oortCloud.vert" />
     <None Include="orbit.frag" />
     <None Include="orbit.vert" />
     <None Include="packages.config" />

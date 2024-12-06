@@ -13,37 +13,32 @@
 #include <sstream>
 #include <thread>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> // Za funkcije za transformaciju matrica
-#include <glm/gtc/type_ptr.hpp>        // Za pretvaranje matrica u pokazivače
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>      
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 
 GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
-    // Inicijalizacija GLFW-a
-    if (!glfwInit()) {
+    if (!glfwInit()) {      // Inicijalizacija GLFW-a
         std::cerr << "GLFW initialization failed!" << std::endl;
         return nullptr;
     }
 
-    // Postavljanje verzije OpenGL-a na 3.3 core
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);    // Postavljanje verzije OpenGL-a na 3.3 core
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // Kreiranje prozora
-    GLFWwindow* window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(width, height, title, nullptr, nullptr);      // Kreiranje prozora
     if (!window) {
         std::cerr << "Window creation failed!" << std::endl;
         glfwTerminate();
         return nullptr;
     }
 
-    // Postavljanje OpenGL konteksta
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window);     // Postavljanje OpenGL konteksta
 
-    // Inicijalizacija GLEW-a
-    glewExperimental = GL_TRUE;
+    glewExperimental = GL_TRUE;     // Inicijalizacija GLEW-a
     if (glewInit() != GLEW_OK) {
         std::cerr << "GLEW initialization failed!" << std::endl;
         glfwTerminate();
@@ -52,9 +47,7 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Podešavanje OpenGL viewport-a
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, width, height);        // Podešavanje OpenGL viewport-a
 
     return window;
 }
@@ -88,28 +81,23 @@ GLuint createProgram(const char* vertexShaderPath, const char* fragmentShaderPat
     GLint success;
     GLchar infoLog[512];
 
-    // Proveri kompajliranje vertex šejdera za Saturn
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);    // Proveri kompajliranje vertex šejdera
     if (!success) {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cerr << "Greška u vertex šejderu za Saturn: " << infoLog << std::endl;
+        std::cerr << "Greška u vertex šejderu: " << infoLog << std::endl;
     }
-
-    // Proveri kompajliranje fragment šejdera za Saturn
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);    // Proveri kompajliranje fragment šejdera
     if (!success) {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cerr << "Greška u fragment šejderu za Saturn: " << infoLog << std::endl;
+        std::cerr << "Greška u fragment šejderu: " << infoLog << std::endl;
     }
 
-    
-    // Proveri linkovanje programa za Saturn
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    glGetProgramiv(program, GL_LINK_STATUS, &success);    // Proveri linkovanje programa
     if (!success) {
         glGetProgramInfoLog(program, 512, NULL, infoLog);
         std::string str(infoLog);
         if (!str.empty()){
-            std::cerr << "Greška pri linkovanju programa za Saturn: " << infoLog << std::endl;
+            std::cerr << "Greška pri linkovanju programa: " << infoLog << std::endl;
         }
     }
     glAttachShader(program, vertexShader);
@@ -130,12 +118,12 @@ void limitFPS(std::chrono::time_point<std::chrono::high_resolution_clock>& lastF
     lastFrameTime = high_resolution_clock::now();
 }
 
-//Funkcija za izracunavanje projekcije
+//Funkcija za izracunavanje projekcije (pravougaonik koord koje vidimo na ekranu
 glm::mat4 calculateProjection(int screenWidth, int screenHeight, float zoomLevel, float offsetX, float offsetY) {
-    // Izračunavanje aspect ratio-a ekrana
+    // Izracunavanje aspect ratio-a ekrana da bi sve ostalo u proporiciji a ne razvuklo se jer je ekran pravougaonik)
     float aspectRatio = static_cast<float>(screenWidth) / screenHeight;
 
-    // Obrnuti faktor zooma (veći zoomLevel = bliže)
+    // Obrnuti faktor zooma (veći zoomLevel = blize)
     float zoomFactor = 1.0f / zoomLevel;
 
     // Kreiranje ortografske projekcije sa zoom i offset parametrima
@@ -229,21 +217,17 @@ struct Character {
 };
 
 void loadFont(const std::string& fontPath, std::map<GLchar, Character>& Characters) {
-    //std::cout << "Starting loadFont with fontPath: " << fontPath << std::endl;
-
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
-        std::cerr << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        std::cerr << "ERROR FREETYPE: Nije instanciran" << std::endl;
         return;
     }
-    //std::cout << "FreeType Library initialized successfully." << std::endl;
 
     FT_Face face;
     if (FT_New_Face(ft, fontPath.c_str(), 0, &face)) {
-        std::cerr << "ERROR::FREETYPE: Failed to load font from: " << fontPath << std::endl;
+        std::cerr << "ERROR FREETYPE: Nije ucitao font: " << fontPath << std::endl;
         return;
     }
-    //std::cout << "Font loaded successfully from: " << fontPath << std::endl;
 
     FT_Set_Pixel_Sizes(face, 0, 48); // Postavi veličinu fonta na 48 piksela
 
@@ -252,10 +236,9 @@ void loadFont(const std::string& fontPath, std::map<GLchar, Character>& Characte
     for (GLubyte c = 0; c < 128; c++) {
         // Učitaj glif
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            std::cerr << "ERROR::FREETYPE: Failed to load Glyph for character: " << c << std::endl;
+            std::cerr << "ERROR FREETYPE: Nije ucitao Glyph za karakter: " << c << std::endl;
             continue;
         }
-        //std::cout << "Successfully loaded glyph for character: " << c << std::endl;
 
         // Kreiraj teksturu za karakter
         GLuint texture;
@@ -274,11 +257,9 @@ void loadFont(const std::string& fontPath, std::map<GLchar, Character>& Characte
         );
         GLenum error = glGetError();
         if (error != GL_NO_ERROR) {
-            std::cerr << "OpenGL error after glTexImage2D: " << error
-                << " for character: " << c << std::endl;
+            std::cerr << "OpenGL error: " << error
+                << " za karakter: " << c << std::endl;
         }
-
-        //std::cout << "Generated texture ID: " << texture << " for character: " << c << std::endl;
 
         // Postavke teksture
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -294,128 +275,12 @@ void loadFont(const std::string& fontPath, std::map<GLchar, Character>& Characte
             static_cast<GLuint>(face->glyph->advance.x)
         };
         Characters.insert(std::pair<GLchar, Character>(c, character));
-
-       /* std::cout << "Character '" << c << "' added to map with Size: ("
-            << face->glyph->bitmap.width << ", " << face->glyph->bitmap.rows
-            << "), Bearing: (" << face->glyph->bitmap_left << ", "
-            << face->glyph->bitmap_top << "), Advance: " << face->glyph->advance.x << std::endl;*/
     }
 
-    //std::cout << "Total characters loaded into map: " << Characters.size() << std::endl;
-    glBindTexture(GL_TEXTURE_2D, 0);    //zizi
+    glBindTexture(GL_TEXTURE_2D, 0);
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
-    //std::cout << "FreeType resources released." << std::endl;
 }
-
-//void initializeTextVAOandVBO(GLuint &textVAO,GLuint &textVBO) {
-//    // Kreiraj VAO i VBO za tekst
-//    glGenVertexArrays(1, &textVAO);
-//    glGenBuffers(1, &textVBO);
-//
-//    glBindVertexArray(textVAO);
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
-//
-//    // Pozicije
-//    glEnableVertexAttribArray(0);
-//    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-//
-//    // Teksturne koordinate
-//    glEnableVertexAttribArray(1);
-//    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-//
-//    glBindBuffer(GL_ARRAY_BUFFER, 0);
-//    glBindVertexArray(0);
-//}
-//
-//void renderTextFreetype(GLuint shaderProgram, const std::string& text, float x, float y, float scale, glm::vec3 color,
-//    std::map<GLchar, Character> Characters, GLuint& textVAO, GLuint& textVBO, int screenWidth, int screenHeight) {
-//    //std::cout << "Text VAO: " << textVAO << ", VBO: " << textVBO << std::endl;
-//    GLint textColorLoc = glGetUniformLocation(shaderProgram, "textColor");
-//    GLint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-//   /* std::cout << "TextColor Loc: " << textColorLoc << ", Projection Loc: " << projectionLoc << std::endl;
-//    std::cout << "Broj elemenata u mapi: " << Characters.size() << std::endl;*/
-//    std::cout << "Rendering text: \"" << text << "\" at position (" << x << ", " << y << ")" << std::endl;
-//
-//
-//    // Aktiviraj šejder
-//    glUseProgram(shaderProgram);
-//    if (glGetError() != GL_NO_ERROR) std::cerr << "Error setting shader program!" << std::endl;
-//
-//
-//    // Proveri da li su uniform promenljive pronađene
-//    if (textColorLoc == -1) {
-//        std::cerr << "Uniform 'textColor' not found!" << std::endl;
-//    }
-//    if (projectionLoc == -1) {
-//        std::cerr << "Uniform 'projection' not found!" << std::endl;
-//    }
-//
-//    // Setuj uniform za boju
-//    //glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.r, color.g, color.b);
-//    glUniform3f(glGetUniformLocation(shaderProgram, "textColor"), color.r, color.g, color.b);
-//    if (glGetError() != GL_NO_ERROR) std::cerr << "Error setting textColor uniform!" << std::endl;
-//
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindVertexArray(textVAO);
-//
-//    std::cout << "Rendering text: \"" << text << "\" at position (" << x << ", " << y << ")" << std::endl;
-//
-//    for (auto c : text) {
-//        if (Characters.find(c) == Characters.end()) {
-//            std::cerr << "Character '" << c << "' not found in Characters map!" << std::endl;
-//            continue;
-//        }
-//
-//        Character ch = Characters[c];
-//       /* std::cout << "Character: '" << c << "', Size: (" << ch.Size.x << ", " << ch.Size.y
-//            << "), Bearing: (" << ch.Bearing.x << ", " << ch.Bearing.y
-//            << "), Advance: " << ch.Advance << std::endl;*/
-//
-//        float xpos = (x + ch.Bearing.x * scale) / screenWidth;
-//        float ypos = (y - (ch.Size.y - ch.Bearing.y) * scale) / screenHeight;
-//
-//        float w = (ch.Size.x * scale) / screenWidth;
-//        float h = (ch.Size.y * scale) / screenHeight;
-//
-//        std::cout << "xpos: " << xpos << ", ypos: " << ypos
-//            << ", width: " << w << ", height: " << h << std::endl;
-//
-//        float vertices[6][4] = {
-//            { xpos,     ypos + h,   0.0f, 0.0f },
-//            { xpos,     ypos,       0.0f, 1.0f },
-//            { xpos + w, ypos,       1.0f, 1.0f },
-//
-//            { xpos,     ypos + h,   0.0f, 0.0f },
-//            { xpos + w, ypos,       1.0f, 1.0f },
-//            { xpos + w, ypos + h,   1.0f, 0.0f }
-//        };
-//
-//        std::cout << "Vertices for character: " << c << ":\n";
-//        for (int i = 0; i < 6; i++) {
-//            std::cout << "(" << vertices[i][0] << ", " << vertices[i][1]
-//                << ", " << vertices[i][2] << ", " << vertices[i][3] << ")\n";
-//        }
-//
-//        // Prenesi podatke u VBO
-//        glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-//        if (glGetError() != GL_NO_ERROR) std::cerr << "Error updating VBO data!" << std::endl;
-//
-//        // Renderuj karakter
-//        glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-//        glDrawArrays(GL_TRIANGLES, 0, 6);
-//        if (glGetError() != GL_NO_ERROR) std::cerr << "Error rendering character!" << std::endl;
-//
-//        // Pomeri poziciju za sledeći karakter
-//        x += (ch.Advance >> 6) * scale; // Advance je u 1/64 piksela
-//    }
-//
-//    glBindVertexArray(0);
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//}
 
 
 void RenderText(GLFWwindow* window, unsigned int& shader, std::string text, float x, float y, float scale, glm::vec3 color, 
@@ -435,7 +300,6 @@ void RenderText(GLFWwindow* window, unsigned int& shader, std::string text, floa
     glBindVertexArray(0);
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
-    // activate corresponding render state	
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(windowWidth), 0.0f, static_cast<float>(windowHeight));
     glUseProgram(shader);
     glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -443,7 +307,7 @@ void RenderText(GLFWwindow* window, unsigned int& shader, std::string text, floa
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 
-    // iterate through all characters
+   
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
@@ -454,7 +318,7 @@ void RenderText(GLFWwindow* window, unsigned int& shader, std::string text, floa
 
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
-        // update VBO for each character
+        // update VBO za svaki karakter
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },
             { xpos,     ypos,       0.0f, 1.0f },
@@ -464,28 +328,24 @@ void RenderText(GLFWwindow* window, unsigned int& shader, std::string text, floa
             { xpos + w, ypos,       1.0f, 1.0f },
             { xpos + w, ypos + h,   1.0f, 0.0f }
         };
-        // render glyph texture over quad
+        // renderuj glyph preko pravougaionika
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        // update content of VBO memory
+        // update VBO memoriju
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // render quad
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-        x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        //prebaci kursor za sledeci glyph (advance je 1/64 pixela)
+        x += (ch.Advance >> 6) * scale; //bitshift za 6 da dobijes vrednost u pikselima (2^6 = 64 (podeli 1/64 piksela sa 64 da dobijes kolicinu piksela))
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-
-
-// Klasa za Sunce
 class Sun2D {
 public:
-    float x, y;         // Pozicija Sunca
+    float x, y;         // Pozicija Sunca (0, 0)
     float size;         // Veličina (radijus)
     float rotationSpeed; // Brzina rotacije
     float currentAngle;  // Trenutni ugao rotacije
@@ -501,7 +361,7 @@ public:
         generateCircleData();
     }
 
-    // Ažuriranje ugla rotacije
+    // Ažuriranje ugla rotacije (ovde vrsi rotaciju sam oko sebe)
     void update(float deltaTime) {
         currentAngle += rotationSpeed * deltaTime;
         if (currentAngle > 360.0f) currentAngle -= 360.0f;
@@ -509,8 +369,8 @@ public:
 
     // Generišemo podatke o tačkama kruga
     void generateCircleData() {
-        int numSegments = 100; // Broj segmenata kruga (veća vrednost = glatkiji krug)
-        GLfloat* vertices = new GLfloat[(numSegments + 2) * 4]; // +2 za centar i poslednju tačku
+        int numSegments = 100; // Broj segmenata kruga
+        GLfloat* vertices = new GLfloat[(numSegments + 2) * 4]; // +2 za centar i poslednju tacku
 
         // Prva tačka je centar kruga
         vertices[0] = x;
@@ -528,7 +388,7 @@ public:
 
         glGenVertexArrays(1, &VAO);
         if (VAO == 0) {
-            std::cerr << "Failed to generate VAO!" << std::endl;
+            std::cerr << "Nije generisan VAO!" << std::endl;
             delete[] vertices;
             return;
         }
@@ -536,7 +396,7 @@ public:
 
         glGenBuffers(1, &VBO);
         if (VBO == 0) {
-            std::cerr << "Failed to generate VBO!" << std::endl;
+            std::cerr << "Nije generisan VBO!" << std::endl;
             glBindVertexArray(0);
             delete[] vertices;
             return;
@@ -558,12 +418,9 @@ public:
         delete[] vertices;
     }
 
-
-
     // Crtanje Sunca
     void draw(float deltaTime, const glm::mat4& projection) {
         update(deltaTime);
-
 
         glUseProgram(shaderProgram);
         GLenum error = glGetError();
@@ -572,7 +429,7 @@ public:
         }
 
         // Aktiviraj teksturu
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);       //uzmi teksturu koju si kreirao
         glBindTexture(GL_TEXTURE_2D, textureID);
 
         GLenum error1 = glGetError();
@@ -581,18 +438,18 @@ public:
         }
 
         //Uniform za teksturu
-        GLuint textureLoc = glGetUniformLocation(shaderProgram, "sunTexture");
-        glUniform1i(textureLoc, 0); // Koristi teksturnu jedinicu 0
+        GLuint textureLoc = glGetUniformLocation(shaderProgram, "sunTexture");  //dohvati sun.frag promenljivu
+        glUniform1i(textureLoc, 0); // Koristi teksturnu jedinicu 0 (samo cemo 1 teksturu sad imati) a ovde ce biti koriscena bindovana tekstura od gore
 
 
         // Uniform za projekciju
-        GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");   //uzmi projectio iz sun.vert (prazna)
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection)); // neka se sada kopira ova iz CPU u tu u sun.vert
 
         // Uniform za rotaciju
-        glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(currentAngle), glm::vec3(0.0f, 0.0f, 1.0f));
-        GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+        glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(currentAngle), glm::vec3(0.0f, 0.0f, 1.0f));    //matrica koja rotira oko Z-ose
+        GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform"); //dohvati promenljivu iz sejdera
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform)); //koristi
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 102); // 102 [ 100 segmenata + centar + zatvaranje ]
@@ -605,8 +462,7 @@ public:
     }
 
     glm::vec2 getScreenPosition() {
-        // Računanje trenutne pozicije Sunca uzimajući u obzir offsete
-        return glm::vec2(x, y);
+        return glm::vec2(x, y);     //vraca poziciju sunca (0, 0)
     }
 
     struct SunBounds {      //poenta strukture je najvise da vrati radijus povecan ili umanjen zavisnosti od zooma.
@@ -624,11 +480,8 @@ public:
         // Vrati centar i radijus kao strukturu
         return SunBounds{ sunScreenPos, scaledSize };
     }
-
-
 };
 
-//klasa za Planete
 class Planet2D {
 public:
     float distance;       // Udaljenost od Sunca
@@ -649,28 +502,27 @@ public:
     Planet2D(float dist, float ecc, float sz, float speed, GLuint program, const char* texturePath, float selfRotSpeed)
         : distance(dist), eccentricity(ecc), size(sz), orbitSpeed(speed), shaderProgram(program),
         selfRotationSpeed(selfRotSpeed), currentOrbit(0.0f), currentSelfRotation(0.0f) {
-        // Izračunavanje polumanje ose na osnovu ekscentričnosti
+        // Izracunavanje polumanje ose na osnovu ekscentričnosti
         semiMinorAxis = distance * sqrt(1 - eccentricity * eccentricity);
-        textureID = loadTexture(texturePath); // Učitavanje teksture
+        textureID = loadTexture(texturePath);
         generateCircleData();
         generateOrbitData();
         float scalingFactor = std::max(0.5f, std::min(1.5f / distance, 1.0f));
         size *= scalingFactor;
     }
 
-    // Ažuriranje orbite i rotacije
+    // Update orbitu i rotaciju
     void update(float deltaTime) {
         currentOrbit += orbitSpeed * deltaTime;
         if (currentOrbit > 360.0f) currentOrbit -= 360.0f;
 
-        // Ažuriranje rotacije oko svoje ose
         currentSelfRotation += selfRotationSpeed * deltaTime;
         if (currentSelfRotation > 360.0f) currentSelfRotation -= 360.0f;
     }
 
     // Generisanje podataka o krugu
     void generateCircleData() {
-        int numSegments = 50; // Manje segmenata za manju planetu
+        int numSegments = 50; 
         GLfloat* vertices = new GLfloat[(numSegments + 2) * 4];
 
         // Centar planete
@@ -683,7 +535,7 @@ public:
             float angle = (i * 2.0f * M_PI) / numSegments;
             vertices[4 * (i + 1)] = cos(angle) * size;   // X koordinata
             vertices[4 * (i + 1) + 1] = sin(angle) * size; // Y koordinata
-            vertices[4 * (i + 1) + 2] = 0.5f + 0.5f * cos(angle); // Teksturna X
+            vertices[4 * (i + 1) + 2] = 0.5f + 0.5f * cos(angle); // Teksturna X    [0.5 sluzi da bi iz kvadratne slike izvukli krug]
             vertices[4 * (i + 1) + 3] = 0.5f + 0.5f * sin(angle); // Teksturna Y
         }
 
@@ -710,7 +562,7 @@ public:
 
     // Generisanje podataka za orbitu
     void generateOrbitData() {
-        int numSegments = 100; // Više segmenata za glatku orbitu
+        int numSegments = 100;
         GLfloat* vertices = new GLfloat[numSegments * 2];
 
         for (int i = 0; i < numSegments; ++i) {
@@ -756,17 +608,17 @@ public:
         GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        // Transformacija za planetu (orbita + rotacija oko svoje ose)
-        float angle = currentOrbit * M_PI / 180.0f;
+        // Transformacija za planetu (orbita + rotacija oko svoje ose) ovo ce se u sejderu mnoziti sa porjekcijom (bitno mi da uzmem orbitnu poziciju i ugao da izracunam ovo)
+        float angle = currentOrbit * M_PI / 180.0f;     //trenutno na orbiti uzmi i pretvori taj ugao u radijane (pi / 180)
         glm::vec2 position(cos(angle) * distance - distance * eccentricity, sin(angle) * semiMinorAxis);
         glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position, 0.0f));
-        transform = glm::rotate(transform, glm::radians(currentSelfRotation), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotacija oko ose
+        transform = glm::rotate(transform, glm::radians(currentSelfRotation), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotacija oko z ose
 
         GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 52); // 50 segmenata + centar + zatvaranje
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 52);
         glBindVertexArray(0);
     }
 
@@ -786,7 +638,7 @@ public:
     }
 
     // Funkcija da vrati poziciju planete da bi mesec mogao da se crta
-    glm::vec2 getPosition() {
+    glm::vec2 getPosition() {       //uzmi poziciju ko sto si je uzimao u draw(), i onda vrati svetovnu poziciju planete
         float angle = currentOrbit * M_PI / 180.0f;
         float x = distance * cos(angle) - distance * eccentricity;
         float y = semiMinorAxis * sin(angle);
@@ -799,13 +651,11 @@ public:
     };
 
     PlanetBounds getPlanetBounds(float zoomLevel) {
-        // Računaj trenutnu poziciju Sunca uzimajući u obzir offsete
+        // Racunaj trenutnu poziciju
         glm::vec2 sunScreenPos = getPosition();
 
-        // Skaliraj veličinu Sunca prema zoom nivou
+        // Skaliraj velicinu prema zoom nivou
         float scaledSize = size * zoomLevel;
-
-        // Vrati centar i radijus kao strukturu
         return PlanetBounds{ sunScreenPos, scaledSize };
     }
 
@@ -979,68 +829,7 @@ public:
     }
 };
 
-class OortCloud {
-public:
-    int numObjects;        // Broj objekata u oblaku
-    float innerRadius;     // Unutrašnji radijus oblaka
-    float outerRadius;     // Spoljašnji radijus oblaka
-    GLuint VAO, VBO;       // OpenGL objekti za crtanje
-
-    OortCloud(int num, float innerR, float outerR)
-        : numObjects(num), innerRadius(innerR), outerRadius(outerR) {
-        generateCloudData();
-    }
-
-    void generateCloudData() {
-        std::vector<GLfloat> vertices;
-        vertices.reserve(numObjects * 3); // X, Y, Z za svaki objekat
-
-        for (int i = 0; i < numObjects; ++i) {
-            // Nasumične sfere koordinata
-            float radius = innerRadius + static_cast<float>(rand()) / RAND_MAX * (outerRadius - innerRadius);
-            float theta = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI; // Ugao u XY ravni
-            float phi = acos(1.0f - 2.0f * static_cast<float>(rand()) / RAND_MAX); // Ugao od Z ose
-
-            // Konverzija u kartezijanske koordinate
-            float x = radius * sin(phi) * cos(theta);
-            float y = radius * sin(phi) * sin(theta);
-            float z = radius * cos(phi);
-
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
-        }
-
-        // OpenGL priprema
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
-
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
-        glEnableVertexAttribArray(0);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-    }
-
-    void draw(const glm::mat4& projection, GLuint shaderProgram) {
-        glUseProgram(shaderProgram);
-
-        // Uniform za projekciju
-        GLuint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-        if (projectionLoc != -1) {
-            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        }
-
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_POINTS, 0, numObjects); // Crtaj tačke
-        glBindVertexArray(0);
-    }
-};
-
+//Funkcija za crtanje orbita
 void drawOrbits(glm::mat4 projection, GLuint orbitProgram, Planet2D mercury, Planet2D venus, Planet2D earth, Planet2D mars, Planet2D jupiter,
     Planet2D saturn, Planet2D uranus, Planet2D neptune, Planet2D pluto) {
     mercury.drawOrbit(projection, orbitProgram);
@@ -1054,12 +843,13 @@ void drawOrbits(glm::mat4 projection, GLuint orbitProgram, Planet2D mercury, Pla
     pluto.drawOrbit(projection, orbitProgram);
 }
 
+//funkcija da proveri slucajne visestruke klikove
 bool isOneClick(double& lastKeyPressTime) {
     double debounceDelay = 0.5;
-    double currentTime = glfwGetTime(); // Trenutno vreme (sekunde od pokretanja aplikacije)
+    double currentTime = glfwGetTime(); // trenutno vreme (sekunde od pokretanja aplikacije)
 
     if (currentTime - lastKeyPressTime > debounceDelay) {
-        lastKeyPressTime = currentTime; // Ažuriraj vreme poslednje obrade
+        lastKeyPressTime = currentTime; // update vreme poslednje obrade
         return false;
     }
     return true;
@@ -1089,7 +879,7 @@ bool isMouseOverPlanet(const glm::vec2& mousePos, const Planet2D::PlanetBounds o
     float dx = mousePos.x - objectPos.center.x;
     float dy = mousePos.y - objectPos.center.y;
 
-    float scaledRadius = objectPos.radius * zoomLevel;
+    //float scaledRadius = objectPos.radius * zoomLevel;
 
 
     if (dx * dx + dy * dy <= objectPos.radius * objectPos.radius) {
@@ -1104,7 +894,7 @@ bool isMouseOverSun(const glm::vec2& mousePos, const Sun2D::SunBounds objectPos,
     float dx = mousePos.x - objectPos.center.x;
     float dy = mousePos.y - objectPos.center.y;
 
-    float scaledRadius = objectPos.radius * zoomLevel;
+    //float scaledRadius = objectPos.radius * zoomLevel;
 
 
     if (dx * dx + dy * dy <= objectPos.radius * objectPos.radius) {
@@ -1115,17 +905,16 @@ bool isMouseOverSun(const glm::vec2& mousePos, const Sun2D::SunBounds objectPos,
     }
 }
 
-
 void renderInfoBox(float x, float y, float width, float height, GLuint shaderProgram, const char* textureName) {
     GLuint texture = loadTexture(textureName);
 
     if (texture == 0) {
-        std::cerr << "Error: Invalid texture ID (0)" << std::endl;
+        std::cerr << "Error: Nevalidni Texture ID" << std::endl;
         return;
     }
 
     // Prilagodimo visinu i širinu da budu u NDC
-    width = width * 2.0f;  // Pretpostavljamo da si zadao širinu u relativnim vrednostima ekrana
+    width = width * 2.0f; 
     height = height * 2.0f;
 
     // Verteksi za pravougaonik
@@ -1139,15 +928,6 @@ void renderInfoBox(float x, float y, float width, float height, GLuint shaderPro
         {x + width, y, 1.0f, 0.0f}
     };
 
-   /* for (int i = 0; i < 6; i++) {
-        std::cout << "Vertex " << i << ": ("
-            << vertices[i][0] << ", "
-            << vertices[i][1] << ", "
-            << vertices[i][2] << ", "
-            << vertices[i][3] << ")" << std::endl;
-    }*/
-
-
     GLuint VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -1159,7 +939,7 @@ void renderInfoBox(float x, float y, float width, float height, GLuint shaderPro
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
-    // Aktiviraj šejder
+    // Aktiviraj sejder
     glUseProgram(shaderProgram);
 
     // Binduj teksturu
@@ -1180,6 +960,7 @@ void renderInfoBox(float x, float y, float width, float height, GLuint shaderPro
     glDeleteBuffers(1, &VBO);
 }
 
+//Funkcija ako se desi hoves/click na planetu
 void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, float zoomLevel, Sun2D& sun, Planet2D& mercury, Planet2D& earth, Planet2D & venus,
     Planet2D& mars, Planet2D& jupiter, Planet2D& saturn, Planet2D& uranus, Planet2D& neptune, Planet2D& pluto, glm::mat4 projection, GLuint textShaderProgram,
     std::map<GLchar, Character> Characters, GLuint triviaShaderProgram) {
@@ -1187,7 +968,7 @@ void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, 
 
     glm::vec2 mouseWorldPos = getMouseWorldPosition(window, screenWidth, screenHeight, projection);
     
-    glm::mat4 projectionText = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
+    //glm::mat4 projectionText = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
     // Postavi uniform za projekciju u šejderu za tekst
     glUseProgram(textShaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(textShaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -1198,7 +979,7 @@ void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, 
         RenderText(window, textShaderProgram, "Sun", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "sun-trivia.png");
         }
     }
     // Proveri za planete
@@ -1206,70 +987,66 @@ void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, 
     if (isMouseOverPlanet(mouseWorldPos, mercuryBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Mercury", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "mercury-trivia.png");
         }
     }
     Planet2D::PlanetBounds earthBounds = earth.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, earthBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Earth", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "earth-trivia.png");
         }
     }
     Planet2D::PlanetBounds venusBounds = venus.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, venusBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Venus", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "venus-trivia.png");
         }
     }
     Planet2D::PlanetBounds marsBounds = mars.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, marsBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Mars", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "mars-trivia.png");
         }
     }
     Planet2D::PlanetBounds jupiterBounds = jupiter.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, jupiterBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Jupiter", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "jupiter-trivia.png");
         }
     }
     Planet2D::PlanetBounds saturnBounds = saturn.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, saturnBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Saturn", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "saturn-trivia.png");
         }
     }
     Planet2D::PlanetBounds uranusBounds = uranus.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, uranusBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Uranus", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "uranus-trivia.png");
         }
     }
     Planet2D::PlanetBounds neptuneBounds = neptune.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, neptuneBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Neptune", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "neptune-trivia.png");
         }
     }
     Planet2D::PlanetBounds plutoBounds = pluto.getPlanetBounds(zoomLevel);
     if (isMouseOverPlanet(mouseWorldPos, plutoBounds, zoomLevel)) {
         RenderText(window, textShaderProgram, "Pluto", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "trivia-sun.png");
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "pluto-trivia.png");
         }
     }
 }
-
-
-
-
 
 int main() {
 
@@ -1279,39 +1056,29 @@ int main() {
     if (!window) return -1;
 
 
-    double lastClickTime = glfwGetTime();
-    float zoomLevel = 1.0f; // Početni nivo zooma
-    float minZoom = 5.0f;   //kolko maximalno mozes da umanjis
-    float maxZoom = 0.2f;   //kolko maximalno mozes da uvecas
-    float offsetX = 0.0f; // Ofset za horizontalno pomeranje
-    float offsetY = 0.0f; // Ofset za vertikalno pomeranje
-    float panSpeed = 0.05f; //brzina pomeranja pogleda
+    double lastClickTime = glfwGetTime();   //zapis poslednjeg klika (pomaze pri onemogucavanju slucajnih visestrukih klikova)
 
-    bool orbitsPresent = true;  //boolean da li ce orbite biti prikazane
-
-    float speedMultiplier = 1.0f;    // Faktor ubrzanja animacije
+    float zoomLevel = 1.0f;             // pocetni nivo zooma
+    float minZoom = 5.0f;               // koliko maximalno mozes da umanjis
+    float maxZoom = 0.2f;               // koliko maximalno mozes da uvecas
+    float offsetX = 0.0f;               // ofset za horizontalno pomeranje
+    float offsetY = 0.0f;               // ofset za vertikalno pomeranje
+    float panSpeed = 0.05f;             //brzina pomeranja pogleda
+    bool orbitsPresent = true;          // boolean da li ce orbite biti prikazane
+    float speedMultiplier = 1.0f;       // faktor ubrzanja animacije
 
 
     // Kreiranje ortografske projekcije
-    float aspectRatio = static_cast<float>(screenWidth) / screenHeight;
+    glm::mat4 projection = calculateProjection(screenWidth, screenHeight, zoomLevel, offsetX, offsetY);
 
-    // Kreiranje ortografske projekcije koja koristi dimenzije ekrana
-    glm::mat4 projection = glm::ortho(
-        -screenWidth / 2.0f * zoomLevel,  // Leva granica
-        screenWidth / 2.0f * zoomLevel,  // Desna granica
-        -screenHeight / 2.0f * zoomLevel, // Donja granica
-        screenHeight / 2.0f * zoomLevel, // Gornja granica
-        -1.0f,  // Z-blizina
-        1.0f   // Z-daljina
-    );
+    std::map<GLchar, Character> Characters;     //mapa karaktera za prikazivanje teksta
+    loadFont("LiberationSans-Regular.ttf", Characters); //ucitaj mapu
 
-    std::map<GLchar, Character> Characters;
-    loadFont("LiberationSans-Regular.ttf", Characters);
+    //ucitavanje sejdera za tekst i dodatne informacije
     GLuint textShaderProgram = createProgram("text.vert", "text.frag");
-
     GLuint triviaShaderProgram = createProgram("details.vert", "details.frag");
 
-    //ucitavanje svih sejdera za planete
+    //ucitavanje svih sejdera za sve objekte
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
     GLuint mercuryProgram = createProgram("mercury.vert", "mercury.frag");
     GLuint earthProgram = createProgram("earth.vert", "earth.frag");
@@ -1325,41 +1092,40 @@ int main() {
     GLuint orbitProgram = createProgram("orbit.vert", "orbit.frag");
     GLuint moonProgram = createProgram("moon.vert", "moon.frag");
     GLuint asteroidProgram = createProgram("asteroids.vert", "asteroids.frag");
-    GLuint kuiperProgram = createProgram("kuiper.vert", "kuiper.frag");
-    GLuint oortCloudProgram = createProgram("oortCloud.vert", "oortCloud.frag");
+    GLuint kuiperProgram = createProgram("kuiper-oort.vert", "kuiper-oort.frag");
+    GLuint oortCloudProgram = createProgram("kuiper-oort.vert", "kuiper-oort.frag");
 
 
-    // Kreiranje planeta     //TODO: MOZEMO NAMESTITI DA I SUNCE POSTANE KLASA PLANET2D --> PROBAJ (al nisam siguran da ce moci ipak jer ovo je centralni objekat u prici) !!
-    Sun2D sun(0.0f, 0.0f, 0.05f, 90.0f, sunProgram, "sun-texture.jpg"); // Smanjeno Sunce
-
-    Planet2D mercury(0.1f, 0.206f, 0.02f, 150.0f, mercuryProgram, "mercury-texture.jpg", 30.0f); // Povećan Merkur
-    Planet2D venus(0.15f, 0.007f, 0.03f, 120.0f, venusProgram, "venus-texture.jpeg", 30.0f); // Venera
-    Planet2D earth(0.2f, 0.017f, 0.035f, 100.0f, earthProgram, "earth-texture.jpg", 30.0f); // Zemlja
-    Planet2D mars(0.3f, 0.093f, 0.03f, 80.0f, marsProgram, "mars-texture.jpg", 30.0f); // Mars
+    // Kreiranje planeta    
+    Sun2D sun(0.0f, 0.0f, 0.05f, 90.0f, sunProgram, "sun-texture.jpg");                         // Sunce
+    Planet2D mercury(0.1f, 0.206f, 0.02f, 150.0f, mercuryProgram, "mercury-texture.jpg", 30.0f);// Merkur
+    Planet2D venus(0.15f, 0.007f, 0.03f, 120.0f, venusProgram, "venus-texture.jpeg", 30.0f);    // Venera
+    Planet2D earth(0.2f, 0.017f, 0.035f, 100.0f, earthProgram, "earth-texture.jpg", 30.0f);     // Zemlja
+    Planet2D mars(0.3f, 0.093f, 0.03f, 80.0f, marsProgram, "mars-texture.jpg", 30.0f);          // Mars
     Planet2D jupiter(0.5f, 0.049f, 0.06f, 40.0f, jupiterProgram, "jupiter-texture.jpg", 30.0f); // Jupiter
-    Planet2D saturn(0.7f, 0.056f, 0.05f, 30.0f, saturnProgram, "saturn-texture.jpg", 30.0f); // Saturn
-    Planet2D uranus(1.0f, 0.046f, 0.04f, 20.0f, uranusProgram, "uranus-texture.jpg", 30.0f); // Uran
+    Planet2D saturn(0.7f, 0.056f, 0.05f, 30.0f, saturnProgram, "saturn-texture.jpg", 30.0f);    // Saturn
+    Planet2D uranus(1.0f, 0.046f, 0.04f, 20.0f, uranusProgram, "uranus-texture.jpg", 30.0f);    // Uran
     Planet2D neptune(1.3f, 0.010f, 0.04f, 10.0f, neptuneProgram, "neptune-texture.jpg", 30.0f); // Neptun
-    Planet2D pluto(1.6f, 0.248f, 0.02f, 5.0f, plutoProgram, "pluto-texture.jpg", 30.0f); // Pluton
+    Planet2D pluto(1.6f, 0.248f, 0.02f, 5.0f, plutoProgram, "pluto-texture.jpg", 30.0f);        // Pluton
 
-    Moon2D moon(earth, 0.03f, 0.01f, 300.0f, moonProgram, "moon-texture.jpg"); // Mesec oko Zemlje
-    Moon2D phobos(mars, 0.06f, 0.008f, 300.0f, moonProgram, "phobos-texture.jpg"); // Fobos - Mars
-    Moon2D deimos(mars, 0.15f, 0.01f, 150.0f, moonProgram, "deimos-texture.jpg");   // Deimos - Mars
-    Moon2D io(jupiter, 0.1f, 0.015f, 250.0f, moonProgram, "io-texture.jpg");       // Io - Jupiter
-    Moon2D europa(jupiter, 0.15f, 0.012f, 200.0f, moonProgram, "europa-texture.jpg");    // Evropa - Jupiter
-    Moon2D ganymede(jupiter, 0.25f, 0.02f, 150.0f, moonProgram, "ganymede-texture.jpg");   // Ganimed - Jupiter
-    Moon2D callisto(jupiter, 0.35f, 0.018f, 100.0f, moonProgram, "callisto-texture.jpg");   // Kalisto - Jupiter
-    Moon2D titan(saturn, 0.15f, 0.03f, 200.0f, moonProgram, "titan-texture.jpg");       // Titan - Saturn
-    Moon2D rhea(saturn, 0.25f, 0.02f, 150.0f, moonProgram, "rhea-texture.jpg");       // Rea - Saturn
-    Moon2D iapetus(saturn, 0.4f, 0.015f, 100.0f, moonProgram, "iapetus-texture.jpg");     // Japet - Saturn
-    Moon2D miranda(uranus, 0.1f, 0.02f, 180.0f, moonProgram, "miranda-texture.jpg");     // Miranda - Uran
-    Moon2D ariel(uranus, 0.2f, 0.025f, 140.0f, moonProgram, "ariel-texture.jpg");       // Ariel -  Uran
-    Moon2D umbriel(uranus, 0.3f, 0.02f, 100.0f, moonProgram, "umbriel-texture.jpg");       // Umbriel - Uran
-    Moon2D triton(neptune, 0.15f, 0.03f, 120.0f, moonProgram, "triton-texture.jpg"); // Triton - Neptun
+    Moon2D moon(earth, 0.03f, 0.01f, 300.0f, moonProgram, "moon-texture.jpg");                  // Mesec oko Zemlje
+    Moon2D phobos(mars, 0.06f, 0.008f, 300.0f, moonProgram, "phobos-texture.jpg");              // Fobos - Mars
+    Moon2D deimos(mars, 0.15f, 0.01f, 150.0f, moonProgram, "deimos-texture.jpg");               // Deimos - Mars
+    Moon2D io(jupiter, 0.1f, 0.015f, 250.0f, moonProgram, "io-texture.jpg");                    // Io - Jupiter
+    Moon2D europa(jupiter, 0.15f, 0.012f, 200.0f, moonProgram, "europa-texture.jpg");           // Evropa - Jupiter
+    Moon2D ganymede(jupiter, 0.25f, 0.02f, 150.0f, moonProgram, "ganymede-texture.jpg");        // Ganimed - Jupiter
+    Moon2D callisto(jupiter, 0.35f, 0.018f, 100.0f, moonProgram, "callisto-texture.jpg");       // Kalisto - Jupiter
+    Moon2D titan(saturn, 0.15f, 0.03f, 200.0f, moonProgram, "titan-texture.jpg");               // Titan - Saturn
+    Moon2D rhea(saturn, 0.25f, 0.02f, 150.0f, moonProgram, "rhea-texture.jpg");                 // Rea - Saturn
+    Moon2D iapetus(saturn, 0.4f, 0.015f, 100.0f, moonProgram, "iapetus-texture.jpg");           // Japet - Saturn
+    Moon2D miranda(uranus, 0.1f, 0.02f, 180.0f, moonProgram, "miranda-texture.jpg");            // Miranda - Uran
+    Moon2D ariel(uranus, 0.2f, 0.025f, 140.0f, moonProgram, "ariel-texture.jpg");               // Ariel -  Uran
+    Moon2D umbriel(uranus, 0.3f, 0.02f, 100.0f, moonProgram, "umbriel-texture.jpg");            // Umbriel - Uran
+    Moon2D triton(neptune, 0.15f, 0.03f, 120.0f, moonProgram, "triton-texture.jpg");            // Triton - Neptun
     
-    AsteroidBelt asteroidBelt(1000, 0.35f, 0.45f); // 1000 asteroida između Marsa i Jupitera
-    AsteroidBelt kuiperBelt(1500, 1.5f, 2.0f);     // 1500 objekata između Neptuna i Plutona
-    OortCloud oortCloud(5000, 1.8f, 2.5f); 
+    AsteroidBelt asteroidBelt(1000, 0.35f, 0.45f);  // 1000 asteroida između Marsa i Jupitera
+    AsteroidBelt kuiperBelt(1500, 1.5f, 2.0f);      // 1500 objekata između Neptuna i Plutona
+    AsteroidBelt oortCloud(5000, 2.5f, 5.0f);       // 5000 objekata u Oortovom oblaku
 
 
 
@@ -1373,13 +1139,11 @@ int main() {
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
             zoomLevel += 0.01f; // Zumiraj
             if (zoomLevel < maxZoom) zoomLevel = maxZoom; // Minimalni zoom
-            //std::cout << "zoom level nakon zumiranja: " << zoomLevel <<"\n";
         }
 
         if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
             zoomLevel -= 0.01f; // Odzumiraj
             if (zoomLevel > minZoom) zoomLevel = minZoom; // Maksimalni zoom
-            //std::cout << "zoom level nakon odzumiranja: " << zoomLevel << "\n";
         }
 
         //GASENJE
@@ -1391,23 +1155,19 @@ int main() {
         //POMERANJE PO EKRANU
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
             offsetY += panSpeed * zoomLevel; // Pomeranje nagore
-            //std::cout << "Offset y" << offsetY << "\n";
         }
 
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
             offsetY -= panSpeed * zoomLevel; // Pomeranje nadole
-            //std::cout << "Offset y" << offsetY << "\n";
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
             offsetX -= panSpeed * zoomLevel; // Pomeranje ulevo
-            //std::cout << "Offset x" << offsetX << "\n";
 
         }
 
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
             offsetX += panSpeed * zoomLevel; // Pomeranje udesno
-            //std::cout << "Offset x" << offsetX << "\n";
 
         }
 
@@ -1509,7 +1269,6 @@ int main() {
 
         mouseHoverDetection(window, screenWidth, screenHeight, zoomLevel, sun, mercury, earth, venus, mars, jupiter, saturn, uranus, neptune, pluto, projection, textShaderProgram, Characters, triviaShaderProgram);
         
-
 
         glfwSwapBuffers(window);
         glfwPollEvents();
