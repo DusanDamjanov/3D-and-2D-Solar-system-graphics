@@ -35,9 +35,6 @@
 *.out
 *.app
 
-# Ignore JPG and JPEG image files
-*.jpg
-*.jpeg
 
 # Ignore the packages and .vs and x64 folders
 packages/
