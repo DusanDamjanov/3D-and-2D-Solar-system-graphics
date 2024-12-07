@@ -470,7 +470,7 @@ public:
         float radius;     // Radijus površine
     };
 
-    SunBounds getSunBounds(float zoomLevel) {
+    SunBounds getSunBounds() {
         // Računaj trenutnu poziciju Sunca uzimajući u obzir offsete
         glm::vec2 sunScreenPos = getScreenPosition();
         return SunBounds{ sunScreenPos, size };
@@ -645,7 +645,7 @@ public:
         float radius;     // Radijus površine
     };
 
-    PlanetBounds getPlanetBounds(float zoomLevel) {
+    PlanetBounds getPlanetBounds() {
         // Racunaj trenutnu poziciju
         glm::vec2 sunScreenPos = getPosition();
         return PlanetBounds{ sunScreenPos, size };
@@ -784,7 +784,7 @@ public:
         float radius;     // Radijus površine
     };
 
-    MoonBounds getMoonBounds(float zoomLevel) {
+    MoonBounds getMoonBounds() {
         // Racunaj trenutnu poziciju
         glm::vec2 moonPos = getWorldPosition();
         return MoonBounds{ moonPos, size };
@@ -846,6 +846,11 @@ public:
         glDrawArrays(GL_POINTS, 0, numAsteroids);
         glBindVertexArray(0);
     }
+
+    glm::vec2 getRadiuses() {
+        return glm::vec2{ innerRadius, outerRadius };
+    }
+
 };
 
 //Funkcija za crtanje orbita
@@ -894,7 +899,7 @@ glm::vec2 getMouseWorldPosition(GLFWwindow* window, int screenWidth, int screenH
     return glm::vec2(worldPos.x, worldPos.y);
 }
 
-bool isMouseOverPlanet(const glm::vec2& mousePos, const Planet2D::PlanetBounds objectPos, float zoomLevel) {
+bool isMouseOverPlanet(const glm::vec2& mousePos, const Planet2D::PlanetBounds objectPos) {
     float dx = mousePos.x - objectPos.center.x;
     float dy = mousePos.y - objectPos.center.y;
 
@@ -906,7 +911,7 @@ bool isMouseOverPlanet(const glm::vec2& mousePos, const Planet2D::PlanetBounds o
     }
 }
 
-bool isMouseOverSun(const glm::vec2& mousePos, const Sun2D::SunBounds objectPos, float zoomLevel) {
+bool isMouseOverSun(const glm::vec2& mousePos, const Sun2D::SunBounds objectPos) {
     float dx = mousePos.x - objectPos.center.x;
     float dy = mousePos.y - objectPos.center.y;
 
@@ -918,7 +923,7 @@ bool isMouseOverSun(const glm::vec2& mousePos, const Sun2D::SunBounds objectPos,
     }
 }
 
-bool isMouseOverMoon(const glm::vec2& mousePos, const Moon2D::MoonBounds objectPos, float zoomLevel) {
+bool isMouseOverMoon(const glm::vec2& mousePos, const Moon2D::MoonBounds objectPos) {
     float dx = mousePos.x - objectPos.center.x;
     float dy = mousePos.y - objectPos.center.y;
 
@@ -928,6 +933,17 @@ bool isMouseOverMoon(const glm::vec2& mousePos, const Moon2D::MoonBounds objectP
     else {
         return false;
     }
+}
+
+bool isMouseOverAsteroidBelt(const glm::vec2& mousePos, AsteroidBelt& belt) {
+    float distanceFromCenter = glm::length(mousePos);
+    glm::vec2 radiuses = belt.getRadiuses();
+
+    // Proveri da li je miš unutar prstena
+    if (distanceFromCenter >= radiuses[0] && distanceFromCenter <= radiuses[1]) {
+        return true;
+    }
+    return false;
 }
 
 //render fja za details prikaz planete
@@ -986,47 +1002,70 @@ void renderInfoBox(float x, float y, float width, float height, GLuint shaderPro
     glDeleteBuffers(1, &VBO);
 }
 
-void mouseHoverPlanet(Planet2D& planet, float zoomLevel, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
-    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters, std::string planetName, const char* triviaPath) {
+void mouseHoverPlanet(Planet2D& planet, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
+    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters, std::string planetName, const char* triviaPath, bool &hovered) {
     // Proveri za planete
-    Planet2D::PlanetBounds planetBounds = planet.getPlanetBounds(zoomLevel);
-    if (isMouseOverPlanet(mouseWorldPos, planetBounds, zoomLevel)) {
-        RenderText(window, textShaderProgram, planetName, 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, triviaPath);
+    if (!hovered) {
+        Planet2D::PlanetBounds planetBounds = planet.getPlanetBounds();
+        if (isMouseOverPlanet(mouseWorldPos, planetBounds)) {
+            RenderText(window, textShaderProgram, planetName, 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+                renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, triviaPath);
+            }
+            hovered = true;
         }
     }
 }
 
-void mouseHoverSun(Sun2D& sun, float zoomLevel, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
-    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters) {
+void mouseHoverSun(Sun2D& sun, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
+    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters, bool &hovered) {
     //Proveri za sunce
-    Sun2D::SunBounds sunBounds = sun.getSunBounds(zoomLevel);
-    if (isMouseOverSun(mouseWorldPos, sunBounds, zoomLevel)) {
-        RenderText(window, textShaderProgram, "Sun", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
+    if (!hovered) {
+        Sun2D::SunBounds sunBounds = sun.getSunBounds();
+        if (isMouseOverSun(mouseWorldPos, sunBounds)) {
+            RenderText(window, textShaderProgram, "Sun", 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
 
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "sun-trivia.png");
+            if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+                renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "sun-trivia.png");
+            }
+            hovered = true;
         }
     }
 }
 
-void mouseHoverMoon(Moon2D& moon, float zoomLevel, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
-    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters, std::string moonName) {
-    Moon2D::MoonBounds moonBounds = moon.getMoonBounds(zoomLevel);
-    if (isMouseOverMoon(mouseWorldPos, moonBounds, zoomLevel)) {
-        RenderText(window, textShaderProgram, moonName, 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
-        /* if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-             renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, "pluto-trivia.png");
-         }*/
+void mouseHoverMoon(Moon2D& moon, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
+    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters, std::string moonName, const char* triviaPath, bool &hovered) {
+    if (!hovered) {
+        Moon2D::MoonBounds moonBounds = moon.getMoonBounds();
+        if (isMouseOverMoon(mouseWorldPos, moonBounds)) {
+            RenderText(window, textShaderProgram, moonName, 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
+             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+                 renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram,  triviaPath);
+             }
+            hovered = true;
+        }
+    }
+}
+
+void mouseHoverAsteroidBelt(AsteroidBelt& belt, glm::vec2 mouseWorldPos, GLFWwindow* window, GLuint textShaderProgram,
+    GLuint triviaShaderProgram, std::map<GLchar, Character> Characters, std::string beltName, const char* triviaPath, bool &hovered) {
+    if (!hovered) {
+        if (isMouseOverAsteroidBelt(mouseWorldPos, belt)) {
+            RenderText(window, textShaderProgram, beltName, 0.0f, 0.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), Characters);
+             if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+                 renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, triviaShaderProgram, triviaPath);
+             }
+            hovered = true;
+        }
     }
 }
 
 //Funkcija ako se desi hoves/click na planetu
-void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, float zoomLevel, Sun2D& sun, Planet2D& mercury, Planet2D& earth, Planet2D & venus,
+void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, Sun2D& sun, Planet2D& mercury, Planet2D& earth, Planet2D & venus,
     Planet2D& mars, Planet2D& jupiter, Planet2D& saturn, Planet2D& uranus, Planet2D& neptune, Planet2D& pluto, Moon2D& moon,
     Moon2D& phobos, Moon2D& deimos, Moon2D& io, Moon2D& europa, Moon2D& ganymede, Moon2D& callisto, Moon2D& titan, Moon2D& rhea,
-    Moon2D& iapetus, Moon2D& miranda, Moon2D& ariel, Moon2D& umbriel, Moon2D& triton, glm::mat4 projection, GLuint textShaderProgram,
+    Moon2D& iapetus, Moon2D& miranda, Moon2D& ariel, Moon2D& umbriel, Moon2D& triton, AsteroidBelt& asteroidBelt, AsteroidBelt& kuiperBelt,
+    AsteroidBelt& oortBelt, glm::mat4 projection, GLuint textShaderProgram,
     std::map<GLchar, Character> characters, GLuint triviaShaderProgram) {
    
 
@@ -1036,34 +1075,38 @@ void mouseHoverDetection(GLFWwindow* window, int screenWidth, int screenHeight, 
     glUseProgram(textShaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(textShaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
+    bool hovered = false;
    
-    mouseHoverSun(sun, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters);
+    mouseHoverSun(sun, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, hovered);
 
-    mouseHoverPlanet(mercury, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Mercury", "mercury-trivia.png");
-    mouseHoverPlanet(earth, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Earth", "earth-trivia.png");
-    mouseHoverPlanet(venus, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Venus", "venus-trivia.png");
-    mouseHoverPlanet(mars, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Mars", "mars-trivia.png");
-    mouseHoverPlanet(jupiter, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Jupiter", "jupiter-trivia.png");
-    mouseHoverPlanet(saturn, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Saturn", "saturn-trivia.png");
-    mouseHoverPlanet(uranus, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Uranus", "uranus-trivia.png");
-    mouseHoverPlanet(neptune, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Neptune", "neptune-trivia.png");
-    mouseHoverPlanet(pluto, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Pluto", "pluto-trivia.png");
+    mouseHoverPlanet(mercury, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Mercury", "mercury-trivia.png", hovered);
+    mouseHoverPlanet(earth, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Earth", "earth-trivia.png", hovered);
+    mouseHoverPlanet(venus, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Venus", "venus-trivia.png", hovered);
+    mouseHoverPlanet(mars, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Mars", "mars-trivia.png", hovered);
+    mouseHoverPlanet(jupiter, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Jupiter", "jupiter-trivia.png", hovered);
+    mouseHoverPlanet(saturn, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Saturn", "saturn-trivia.png", hovered);
+    mouseHoverPlanet(uranus, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Uranus", "uranus-trivia.png", hovered);
+    mouseHoverPlanet(neptune, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Neptune", "neptune-trivia.png", hovered);
+    mouseHoverPlanet(pluto, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Pluto", "pluto-trivia.png", hovered);
 
-    mouseHoverMoon(moon, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Moon");
-    mouseHoverMoon(phobos, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Phobos");
-    mouseHoverMoon(deimos, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Deimos");
-    mouseHoverMoon(io, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Io");
-    mouseHoverMoon(europa, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Europa");
-    mouseHoverMoon(ganymede, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Ganymede");
-    mouseHoverMoon(callisto, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Callisto");
-    mouseHoverMoon(titan, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Titan");
-    mouseHoverMoon(rhea, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Rhea");
-    mouseHoverMoon(iapetus, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Iapetus");
-    mouseHoverMoon(miranda, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Miranda");
-    mouseHoverMoon(ariel, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Ariel");
-    mouseHoverMoon(umbriel, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Umbriel");
-    mouseHoverMoon(triton, zoomLevel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Triton");
+    mouseHoverMoon(moon, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Moon", "moon-trivia.png", hovered);
+    mouseHoverMoon(phobos, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Phobos", "phobos-trivia.png", hovered);
+    mouseHoverMoon(deimos, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Deimos", "deimos-trivia.png", hovered);
+    mouseHoverMoon(io, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Io", "io-trivia.png", hovered);
+    mouseHoverMoon(europa, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Europa", "europa-trivia.png", hovered);
+    mouseHoverMoon(ganymede, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Ganymede", "ganymede-trivia.png", hovered);
+    mouseHoverMoon(callisto, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Callisto", "callisto-trivia.png", hovered);
+    mouseHoverMoon(titan, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Titan", "titan-trivia.png", hovered);
+    mouseHoverMoon(rhea, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Rhea", "rhea-trivia.png", hovered);
+    mouseHoverMoon(iapetus, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Iapetus", "iapetus-trivia.png", hovered);
+    mouseHoverMoon(miranda, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Miranda", "miranda-trivia.png", hovered);
+    mouseHoverMoon(ariel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Ariel", "ariel-trivia.png", hovered);
+    mouseHoverMoon(umbriel, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Umbriel", "umbriel-trivia.png", hovered);
+    mouseHoverMoon(triton, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Triton", "triton-trivia.png", hovered);
 
+    mouseHoverAsteroidBelt(asteroidBelt, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Main Asteroid Belt", "main asteroid belt-trivia.png", hovered);
+    mouseHoverAsteroidBelt(kuiperBelt, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Kuiper Belt", "kuiper belt-trivia.png", hovered);
+    mouseHoverAsteroidBelt(oortBelt, mouseWorldPos, window, textShaderProgram, triviaShaderProgram, characters, "Oort Cloud", "oort cloud-trivia.png", hovered);
 }
 
 int main() {
@@ -1077,8 +1120,8 @@ int main() {
     double lastClickTime = glfwGetTime();   //zapis poslednjeg klika (pomaze pri onemogucavanju slucajnih visestrukih klikova)
 
     float zoomLevel = 1.0f;             // pocetni nivo zooma
-    float minZoom = 0.1f;  // Maksimalno uvećanje (bliže)
-    float maxZoom = 2.5f;  // Maksimalno smanjenje (dalje)
+    float minZoom = 0.1f;               // Maksimalno uvećanje (bliže)
+    float maxZoom = 2.5f;               // Maksimalno smanjenje (dalje)
     float offsetX = 0.0f;               // ofset za horizontalno pomeranje
     float offsetY = 0.0f;               // ofset za vertikalno pomeranje
     float panSpeed = 0.05f;             //brzina pomeranja pogleda
@@ -1097,16 +1140,16 @@ int main() {
     GLuint triviaShaderProgram = createProgram("details.vert", "details.frag");
 
     //ucitavanje svih sejdera za sve objekte
-    GLuint sunProgram = createProgram("sun.vert", "sun.frag");
-    GLuint mercuryProgram = createProgram("mercury.vert", "mercury.frag");
-    GLuint earthProgram = createProgram("earth.vert", "earth.frag");
-    GLuint venusProgram = createProgram("venus.vert", "venus.frag");
-    GLuint marsProgram = createProgram("mars.vert", "mars.frag");
-    GLuint jupiterProgram = createProgram("jupiter.vert", "jupiter.frag");
-    GLuint saturnProgram = createProgram("saturn.vert", "saturn.frag");
-    GLuint uranusProgram = createProgram("uranus.vert", "uranus.frag");
-    GLuint neptuneProgram = createProgram("neptune.vert", "neptune.frag");
-    GLuint plutoProgram = createProgram("pluto.vert", "pluto.frag");
+    GLuint sunProgram = createProgram("planet.vert", "planet.frag");
+    GLuint mercuryProgram = createProgram("planet.vert", "planet.frag");
+    GLuint earthProgram = createProgram("planet.vert", "planet.frag");
+    GLuint venusProgram = createProgram("planet.vert", "planet.frag");
+    GLuint marsProgram = createProgram("planet.vert", "planet.frag");
+    GLuint jupiterProgram = createProgram("planet.vert", "planet.frag");
+    GLuint saturnProgram = createProgram("planet.vert", "planet.frag");
+    GLuint uranusProgram = createProgram("planet.vert", "planet.frag");
+    GLuint neptuneProgram = createProgram("planet.vert", "planet.frag");
+    GLuint plutoProgram = createProgram("planet.vert", "planet.frag");
     GLuint orbitProgram = createProgram("orbit.vert", "orbit.frag");
     GLuint moonProgram = createProgram("moon.vert", "moon.frag");
     GLuint asteroidProgram = createProgram("asteroids.vert", "asteroids.frag");
@@ -1116,32 +1159,32 @@ int main() {
 
     // Kreiranje planeta    
     Sun2D sun(0.0f, 0.0f, 0.05f, 90.0f, sunProgram, "sun-texture.jpg");                         // Sunce
-    Planet2D mercury(0.1f, 0.206f, 0.02f, 150.0f, mercuryProgram, "mercury-texture.jpg", 30.0f);// Merkur
-    Planet2D venus(0.15f, 0.007f, 0.03f, 120.0f, venusProgram, "venus-texture.jpeg", 30.0f);    // Venera
-    Planet2D earth(0.2f, 0.017f, 0.035f, 100.0f, earthProgram, "earth-texture.jpg", 30.0f);     // Zemlja
+    Planet2D mercury(0.1f, 0.206f, 0.01f, 150.0f, mercuryProgram, "mercury-texture.jpg", 30.0f);// Merkur
+    Planet2D venus(0.15f, 0.007f, 0.015f, 120.0f, venusProgram, "venus-texture.jpg", 30.0f);    // Venera
+    Planet2D earth(0.2f, 0.017f, 0.02f, 100.0f, earthProgram, "earth-texture.png", 30.0f);     // Zemlja
     Planet2D mars(0.3f, 0.093f, 0.03f, 80.0f, marsProgram, "mars-texture.jpg", 30.0f);          // Mars
-    Planet2D jupiter(0.5f, 0.049f, 0.06f, 40.0f, jupiterProgram, "jupiter-texture.jpg", 30.0f); // Jupiter
+    Planet2D jupiter(0.5f, 0.049f, 0.05f, 40.0f, jupiterProgram, "jupiter-texture.jpg", 30.0f); // Jupiter
     Planet2D saturn(0.7f, 0.056f, 0.05f, 30.0f, saturnProgram, "saturn-texture.jpg", 30.0f);    // Saturn
     Planet2D uranus(1.0f, 0.046f, 0.04f, 20.0f, uranusProgram, "uranus-texture.jpg", 30.0f);    // Uran
     Planet2D neptune(1.3f, 0.010f, 0.04f, 10.0f, neptuneProgram, "neptune-texture.jpg", 30.0f); // Neptun
     Planet2D pluto(1.6f, 0.248f, 0.02f, 5.0f, plutoProgram, "pluto-texture.jpg", 30.0f);        // Pluton
 
     Moon2D moon(earth, 0.03f, 0.01f, 300.0f, moonProgram, "moon-texture.jpg");                  // Mesec oko Zemlje
-    Moon2D phobos(mars, 0.06f, 0.008f, 300.0f, moonProgram, "phobos-texture.jpg");              // Fobos - Mars
-    Moon2D deimos(mars, 0.15f, 0.01f, 150.0f, moonProgram, "deimos-texture.jpg");               // Deimos - Mars
-    Moon2D io(jupiter, 0.1f, 0.015f, 250.0f, moonProgram, "io-texture.jpg");                    // Io - Jupiter
-    Moon2D europa(jupiter, 0.15f, 0.012f, 200.0f, moonProgram, "europa-texture.jpg");           // Evropa - Jupiter
-    Moon2D ganymede(jupiter, 0.25f, 0.02f, 150.0f, moonProgram, "ganymede-texture.jpg");        // Ganimed - Jupiter
-    Moon2D callisto(jupiter, 0.35f, 0.018f, 100.0f, moonProgram, "callisto-texture.jpg");       // Kalisto - Jupiter
-    Moon2D titan(saturn, 0.15f, 0.03f, 200.0f, moonProgram, "titan-texture.jpg");               // Titan - Saturn
-    Moon2D rhea(saturn, 0.25f, 0.02f, 150.0f, moonProgram, "rhea-texture.jpg");                 // Rea - Saturn
-    Moon2D iapetus(saturn, 0.4f, 0.015f, 100.0f, moonProgram, "iapetus-texture.jpg");           // Japet - Saturn
-    Moon2D miranda(uranus, 0.1f, 0.02f, 180.0f, moonProgram, "miranda-texture.jpg");            // Miranda - Uran
-    Moon2D ariel(uranus, 0.2f, 0.025f, 140.0f, moonProgram, "ariel-texture.jpg");               // Ariel -  Uran
-    Moon2D umbriel(uranus, 0.3f, 0.02f, 100.0f, moonProgram, "umbriel-texture.jpg");            // Umbriel - Uran
-    Moon2D triton(neptune, 0.15f, 0.03f, 120.0f, moonProgram, "triton-texture.jpg");            // Triton - Neptun
+    Moon2D phobos(mars, 0.03f, 0.008f, 300.0f, moonProgram, "phobos-texture.jpg");              // Fobos - Mars
+    Moon2D deimos(mars, 0.05f, 0.01f, 150.0f, moonProgram, "deimos-texture.jpg");               // Deimos - Mars
+    Moon2D io(jupiter, 0.05f, 0.01f, 250.0f, moonProgram, "io-texture.jpg");                    // Io - Jupiter
+    Moon2D europa(jupiter, 0.08f, 0.012f, 200.0f, moonProgram, "europa-texture.jpg");           // Evropa - Jupiter
+    Moon2D ganymede(jupiter, 0.12f, 0.01f, 150.0f, moonProgram, "ganymede-texture.jpg");        // Ganimed - Jupiter
+    Moon2D callisto(jupiter, 0.15f, 0.01f, 100.0f, moonProgram, "callisto-texture.jpg");       // Kalisto - Jupiter
+    Moon2D titan(saturn, 0.095f, 0.01f, 200.0f, moonProgram, "titan-texture.jpg");               // Titan - Saturn
+    Moon2D rhea(saturn, 0.07f, 0.012f, 150.0f, moonProgram, "rhea-texture.jpg");                 // Rea - Saturn
+    Moon2D iapetus(saturn, 0.12f, 0.012f, 100.0f, moonProgram, "iapetus-texture.jpg");           // Japet - Saturn
+    Moon2D miranda(uranus, 0.07f, 0.01f, 180.0f, moonProgram, "miranda-texture.jpg");            // Miranda - Uran
+    Moon2D ariel(uranus, 0.1f, 0.012f, 140.0f, moonProgram, "ariel-texture.jpg");               // Ariel -  Uran
+    Moon2D umbriel(uranus, 0.13f, 0.014f, 100.0f, moonProgram, "umbriel-texture.jpg");            // Umbriel - Uran
+    Moon2D triton(neptune, 0.12f, 0.01f, 120.0f, moonProgram, "triton-texture.jpg");            // Triton - Neptun
     
-    AsteroidBelt asteroidBelt(1000, 0.35f, 0.45f);  // 1000 asteroida između Marsa i Jupitera
+    AsteroidBelt mainAsteroidBelt(1000, 0.35f, 0.45f);  // 1000 asteroida između Marsa i Jupitera
     AsteroidBelt kuiperBelt(1500, 1.5f, 2.0f);      // 1500 objekata između Neptuna i Plutona
     AsteroidBelt oortCloud(5000, 2.5f, 5.0f);       // 5000 objekata u Oortovom oblaku
 
@@ -1201,7 +1244,7 @@ int main() {
                     speedMultiplier = 1.0f;
                 }
                 else {
-                    speedMultiplier += 50;
+                    speedMultiplier += 5;
                     if (speedMultiplier > 200) {
                         speedMultiplier = 200.0f;
                     }
@@ -1214,7 +1257,7 @@ int main() {
                     speedMultiplier = 1.0;
                 }
                 else {
-                    speedMultiplier -= 50;
+                    speedMultiplier -= 5;
                     if (speedMultiplier < 1) {
                         speedMultiplier = 1.0f;
                     }
@@ -1222,11 +1265,9 @@ int main() {
             }
         }
 
-
         auto now = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> deltaTime = now - lastFrameTime;
         lastFrameTime = now;
-
         limitFPS(lastFrameTime); // Ograničavanje na 60 FPS
 
         // Brisanje ekrana
@@ -1266,7 +1307,7 @@ int main() {
 
         pluto.draw(deltaTime.count() * speedMultiplier, projection);
 
-        asteroidBelt.draw(projection, asteroidProgram);
+        mainAsteroidBelt.draw(projection, asteroidProgram);
         kuiperBelt.draw(projection, kuiperProgram);
         oortCloud.draw(projection, oortCloudProgram);
 
@@ -1274,8 +1315,9 @@ int main() {
             drawOrbits(projection, orbitProgram, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto);
         }
 
-        mouseHoverDetection(window, screenWidth, screenHeight, zoomLevel, sun, mercury, earth, venus, mars, jupiter, saturn, uranus, neptune, pluto, 
-            moon, phobos, deimos, io, europa, ganymede, callisto, titan, rhea, iapetus, miranda, ariel, umbriel, triton,  projection, textShaderProgram, Characters, triviaShaderProgram);
+        mouseHoverDetection(window, screenWidth, screenHeight, sun, mercury, earth, venus, mars, jupiter, saturn, uranus, neptune, pluto, 
+            moon, phobos, deimos, io, europa, ganymede, callisto, titan, rhea, iapetus, miranda, ariel, umbriel, triton, mainAsteroidBelt, 
+            kuiperBelt, oortCloud, projection, textShaderProgram, Characters, triviaShaderProgram);
         
         glfwSwapBuffers(window);
         glfwPollEvents();
