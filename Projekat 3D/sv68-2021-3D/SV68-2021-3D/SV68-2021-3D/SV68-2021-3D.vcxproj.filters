@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Moons">
+      <UniqueIdentifier>{c35f0321-ad3e-4c87-ac08-5cc491807388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Planets">
+      <UniqueIdentifier>{96fb3b94-984a-461b-a3ce-9e051181501a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Trivia">
+      <UniqueIdentifier>{b18d2448-eb34-49e9-9586-3aa9b6a72fcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Trivia\Planets">
+      <UniqueIdentifier>{8291d8f2-a890-44f8-a549-a0398481d676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Trivia\Asteroids">
+      <UniqueIdentifier>{1781c49b-71ed-40a5-b5d7-08f0c373b869}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Trivia\Moons">
+      <UniqueIdentifier>{d4fa1d67-aaba-413a-802c-39b01aea1264}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SV68-2021-3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ariel-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="callisto-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="deimos-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="europa-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="ganymede-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="iapetus-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="io-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="miranda-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="moon-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="phobos-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="rhea-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="titan-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="triton-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="umbriel-texture.jpg">
+      <Filter>Resource Files\Moons</Filter>
+    </Image>
+    <Image Include="earth-texture.png">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="jupiter-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="mars-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="mercury-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="neptune-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="pluto-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="saturn-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="sun-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="uranus-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="venus-texture.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="kuiper belt-trivia.png">
+      <Filter>Resource Files\Trivia\Asteroids</Filter>
+    </Image>
+    <Image Include="main asteroid belt-trivia.png">
+      <Filter>Resource Files\Trivia\Asteroids</Filter>
+    </Image>
+    <Image Include="oort cloud-trivia.png">
+      <Filter>Resource Files\Trivia\Asteroids</Filter>
+    </Image>
+    <Image Include="ariel-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="callisto-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="deimos-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="europa-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="ganymede-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="iapetus-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="io-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="miranda-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="moon-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="phobos-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="rhea-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="titan-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="triton-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="umbriel-trivia.png">
+      <Filter>Resource Files\Trivia\Moons</Filter>
+    </Image>
+    <Image Include="earth-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="jupiter-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="mars-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="mercury-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="neptune-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="pluto-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="saturn-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="sun-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="uranus-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+    <Image Include="venus-trivia.png">
+      <Filter>Resource Files\Trivia\Planets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="LiberationSans-Regular.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
+</Project>
