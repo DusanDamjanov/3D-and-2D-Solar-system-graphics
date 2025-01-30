@@ -31,14 +31,74 @@
     <Filter Include="Resource Files\Trivia\Moons">
       <UniqueIdentifier>{d4fa1d67-aaba-413a-802c-39b01aea1264}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Shader Files">
+      <UniqueIdentifier>{20362d03-3337-4287-9464-30c84702b7bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Asteroids">
+      <UniqueIdentifier>{9519f4a7-2067-410d-a646-6285c0891441}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Moons">
+      <UniqueIdentifier>{1e7a6304-4eda-4f0c-9a10-08282831faa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Planets">
+      <UniqueIdentifier>{5af9367a-fabd-4147-8f06-38f7279d347a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SV68-2021-3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="todo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="details.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="details.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="orbit.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="orbit.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="text.frag">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="text.vert">
+      <Filter>Source Files\Shader Files</Filter>
+    </None>
+    <None Include="asteroids.frag">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="asteroids.vert">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="kuiper-oort.frag">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="kuiper-oort.vert">
+      <Filter>Source Files\Shader Files\Asteroids</Filter>
+    </None>
+    <None Include="moon.frag">
+      <Filter>Source Files\Shader Files\Moons</Filter>
+    </None>
+    <None Include="moon.vert">
+      <Filter>Source Files\Shader Files\Moons</Filter>
+    </None>
+    <None Include="sun.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="sun.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ariel-texture.jpg">
@@ -102,9 +162,6 @@
       <Filter>Resource Files\Planets</Filter>
     </Image>
     <Image Include="saturn-texture.jpg">
-      <Filter>Resource Files\Planets</Filter>
-    </Image>
-    <Image Include="sun-texture.jpg">
       <Filter>Resource Files\Planets</Filter>
     </Image>
     <Image Include="uranus-texture.jpg">
@@ -194,10 +251,21 @@
     <Image Include="venus-trivia.png">
       <Filter>Resource Files\Trivia\Planets</Filter>
     </Image>
+    <Image Include="sun-texture.png">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="LiberationSans-Regular.ttf">
       <Filter>Resource Files</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SV68-2021-3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

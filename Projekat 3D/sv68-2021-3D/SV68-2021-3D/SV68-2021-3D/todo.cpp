@@ -10,3 +10,5 @@
 
 //TODO: Neka se na tastere 1, 2, 3 mijenja prikaz poligona kao poligona, ivica i tjemena.Ukljucite testiranje dubine i odstranjivanje zadnjih lica na
 // takav nacin da sve bude prikladno prikazano.
+
+//FIXME: ima problem sa ucitavanjem jednog karaktera na ovom fontu pa to treba mozda resavati (A mozda nema ni potrebe realno :D ) -> karakter: '\0' 

@@ -128,10 +128,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Sun.cpp" />
     <ClCompile Include="SV68-2021-3D.cpp" />
+    <ClCompile Include="todo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="asteroids.frag" />
+    <None Include="asteroids.vert" />
+    <None Include="details.frag" />
+    <None Include="details.vert" />
+    <None Include="kuiper-oort.frag" />
+    <None Include="kuiper-oort.vert" />
+    <None Include="moon.frag" />
+    <None Include="moon.vert" />
+    <None Include="orbit.frag" />
+    <None Include="orbit.vert" />
     <None Include="packages.config" />
+    <None Include="sun.frag" />
+    <None Include="sun.vert" />
+    <None Include="text.frag" />
+    <None Include="text.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="ariel-texture.jpg" />
@@ -173,7 +189,7 @@
     <Image Include="rhea-trivia.png" />
     <Image Include="saturn-texture.jpg" />
     <Image Include="saturn-trivia.png" />
-    <Image Include="sun-texture.jpg" />
+    <Image Include="sun-texture.png" />
     <Image Include="sun-trivia.png" />
     <Image Include="titan-texture.jpg" />
     <Image Include="titan-trivia.png" />
@@ -189,20 +205,24 @@
   <ItemGroup>
     <Font Include="LiberationSans-Regular.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Sun.h" />
+    <ClInclude Include="SV68-2021-3D.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\glfw.3.4.0\build\native\glfw.targets" Condition="Exists('..\packages\glfw.3.4.0\build\native\glfw.targets')" />
-    <Import Project="..\packages\glew.v140.1.12.0\build\native\glew.v140.targets" Condition="Exists('..\packages\glew.v140.1.12.0\build\native\glew.v140.targets')" />
     <Import Project="..\packages\glm.1.0.1\build\native\glm.targets" Condition="Exists('..\packages\glm.1.0.1\build\native\glm.targets')" />
     <Import Project="..\packages\freetype2.2.6.0.1\build\native\freetype2.targets" Condition="Exists('..\packages\freetype2.2.6.0.1\build\native\freetype2.targets')" />
+    <Import Project="..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets" Condition="Exists('..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\glfw.3.4.0\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glfw.3.4.0\build\native\glfw.targets'))" />
-    <Error Condition="!Exists('..\packages\glew.v140.1.12.0\build\native\glew.v140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glew.v140.1.12.0\build\native\glew.v140.targets'))" />
     <Error Condition="!Exists('..\packages\glm.1.0.1\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.1.0.1\build\native\glm.targets'))" />
     <Error Condition="!Exists('..\packages\freetype2.2.6.0.1\build\native\freetype2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\freetype2.2.6.0.1\build\native\freetype2.targets'))" />
+    <Error Condition="!Exists('..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets'))" />
   </Target>
 </Project>
