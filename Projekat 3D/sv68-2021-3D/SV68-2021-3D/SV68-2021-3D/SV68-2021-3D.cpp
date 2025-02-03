@@ -213,10 +213,8 @@ int main() {
 
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
 
-    //Sun3D sun = Sun3D(glm::vec3(0.0f, 0.0f, 0.0f), 0.5, 90.f, sunProgram, "earth-texture.png");
-    GLuint textureID = loadTexture("8k_sun.jpg");
-    Sphere mySphere(1.0f, 36, 18);
-    //mySphere.Draw(sunProgram, textureID);
+    GLuint sunTextureID = loadTexture("8k_sun.jpg");
+    Sun sun(1.0f, 36, 18);
 
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
@@ -236,7 +234,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // **Draw Sphere**
-        mySphere.Draw(sunProgram, textureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+        sun.Draw(sunProgram, sunTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
