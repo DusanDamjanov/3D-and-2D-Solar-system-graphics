@@ -49,6 +49,8 @@ private:
     float radius;
     int sectorCount;
     int stackCount;
+    float rotationAngle = 0.0f; // Uglovi rotacije u stepenima
+    float rotationSpeed = 10.0f; // Stepeni po sekundi
 
     void generateVertices();
     void generateIndices();
@@ -58,7 +60,7 @@ public:
     Sphere(float r, int sectors, int stacks);
     ~Sphere();
 
-    void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection);
+    void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos);
 };
 
 #endif // SPHERE_H

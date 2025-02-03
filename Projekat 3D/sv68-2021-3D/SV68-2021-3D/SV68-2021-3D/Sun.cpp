@@ -298,34 +298,42 @@ void Sphere::setupMesh() {
 
 
 
-void Sphere::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection) {
+void Sphere::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos) {
     glUseProgram(shaderProgram);
 
-    // Model matrix setup
+    // **Update rotation** 
+    rotationAngle += rotationSpeed * deltaTime;  // Rotation speed should be in degrees per second
+    if (rotationAngle > 360.0f) rotationAngle -= 360.0f; // Keep it within 0-360 degrees
+
+    // **Create Model Matrix**
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));  // Sphere at origin
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // No rotation for now
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate around Y-axis
 
-    // Locate uniform variables in the shader
+    // **Send Matrices to Shader**
     GLint modelLoc = glGetUniformLocation(shaderProgram, "model");
     GLint viewLoc = glGetUniformLocation(shaderProgram, "view");
     GLint projectionLoc = glGetUniformLocation(shaderProgram, "projection");
 
-    // Pass matrices to the shader
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(modelMatrix));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-    // Bind texture
+    //// **Pass Camera Position to Shader**     ===> probably will be needed later for shadows and lightning
+    //GLint viewPosLoc = glGetUniformLocation(shaderProgram, "viewPos");
+    //glUniform3fv(viewPosLoc, 1, glm::value_ptr(cameraPos));
+
+    // **Bind Texture**
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
     glUniform1i(glGetUniformLocation(shaderProgram, "sphereTexture"), 0);
 
-    // Draw the sphere
+    // **Draw Sphere**
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(sphere_indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
-    // Unbind the texture
+    // **Unbind Texture**
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
