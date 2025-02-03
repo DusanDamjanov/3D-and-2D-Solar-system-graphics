@@ -12,3 +12,5 @@
 // takav nacin da sve bude prikladno prikazano.
 
 //FIXME: ima problem sa ucitavanjem jednog karaktera na ovom fontu pa to treba mozda resavati (A mozda nema ni potrebe realno :D ) -> karakter: '\0' 
+
+//TODO: Zasto si koristio GLAD umesto GLEW biblioteke i koje su razlike ta dva. I zasto se ne mogu koristiti zajedno?

@@ -2,11 +2,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "SV68-2021-3D.h"
-#include "Sun.h"
-#include "stb_image.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);  // Kamera gleda sa strane
@@ -72,15 +67,23 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
     }
     glfwMakeContextCurrent(window);
 
-    if (glewInit() != GLEW_OK) {
-        std::cerr << "GLEW initialization failed!" << std::endl;
+    //if (glewInit() != GLEW_OK) 
+    //    std::cerr << "GLEW initialization failed!" << std::endl;
+    //    return nullptr;
+    //}
+    //checkOpenGLError("After glew init");
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "GLAD initialization failed!" << std::endl;
         return nullptr;
     }
-    checkOpenGLError("After glew init");
+    checkOpenGLError("After glad init");
+
 
     glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    //glDisable(GL_CULL_FACE);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -160,6 +163,7 @@ glm::mat4 calculateProjectionMatrix(int screenWidth, int screenHeight) {
 
     return glm::perspective(fov, aspectRatio, nearPlane, farPlane);
 }
+
 // Funkcija za učitavanje teksture
 GLuint loadTexture(const char* filePath) {
     GLuint textureID;
@@ -167,31 +171,18 @@ GLuint loadTexture(const char* filePath) {
     glBindTexture(GL_TEXTURE_2D, textureID);
 
     // Postavke teksture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Učitavanje slike
+    stbi_set_flip_vertically_on_load(true); // Flipa teksturu ako je potrebno
     int width, height, nrChannels;
     unsigned char* data = stbi_load(filePath, &width, &height, &nrChannels, 0);
 
     if (data) {
         GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
-
-        if (nrChannels == 3) {
-            // Konverzija iz RGB u RGBA (ako nema alpha kanala)
-            unsigned char* newData = new unsigned char[width * height * 4];
-            for (int i = 0, j = 0; i < width * height * 3; i += 3, j += 4) {
-                newData[j] = data[i];         // R
-                newData[j + 1] = data[i + 1]; // G
-                newData[j + 2] = data[i + 2]; // B
-                newData[j + 3] = 255;         // Puna neprozirnost
-            }
-            stbi_image_free(data);
-            data = newData;
-            format = GL_RGBA;
-        }
 
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -214,6 +205,7 @@ GLuint loadTexture(const char* filePath) {
 
 
 
+
 int main() {
     int screenWidth = 800, screenHeight = 600;
     GLFWwindow* window = initializeOpenGL(screenWidth, screenHeight, "3D Suncev sistem");
@@ -221,7 +213,10 @@ int main() {
 
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
 
-    Sun3D sun = Sun3D(glm::vec3(0.0f, 0.0f, 0.0f), 0.5, 90.f, sunProgram, "sun-texture.png");
+    //Sun3D sun = Sun3D(glm::vec3(0.0f, 0.0f, 0.0f), 0.5, 90.f, sunProgram, "earth-texture.png");
+    GLuint textureID = loadTexture("8k_sun.jpg");
+    Sphere mySphere(1.0f, 36, 18);
+    //mySphere.Draw(sunProgram, textureID);
 
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
@@ -237,10 +232,11 @@ int main() {
             std::cout << "Pritisnuli ste ESC. Sve se gasi....";
         }
 
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set background color to dark gray
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Iscrtavanje objekata Sunčevog sistema...
-        sun.draw(viewMatrix, projectionMatrix);
+        // **Draw Sphere**
+        mySphere.Draw(sunProgram, textureID, viewMatrix, projectionMatrix);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -249,5 +245,3 @@ int main() {
     glfwTerminate();
     return 0;
 }
-
-//IMAS ODG NA GPT SAMO GA ISPROVERAVAJ I POKUSAJ DA GA SREDIS KAD KRENES DALJE SUTRA DA RADIS

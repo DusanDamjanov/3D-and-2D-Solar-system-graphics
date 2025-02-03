@@ -254,6 +254,15 @@
     <Image Include="sun-texture.png">
       <Filter>Resource Files\Planets</Filter>
     </Image>
+    <Image Include="2k_jupiter.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="8k_sun.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
+    <Image Include="earth2k.jpg">
+      <Filter>Resource Files\Planets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="LiberationSans-Regular.ttf">
