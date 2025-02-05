@@ -24,6 +24,7 @@
 
 // **Other Headers
 #include "Sun.h"
+#include "Planet.h"
 
 // Deklaracija funkcije za učitavanje teksture
 GLuint loadTexture(const char* filePath);

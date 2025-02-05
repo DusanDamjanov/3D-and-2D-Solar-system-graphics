@@ -212,9 +212,14 @@ int main() {
     if (!window) return -1;
 
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
+    GLuint planetProgram = createProgram("planet.vert", "planet.frag");
 
     GLuint sunTextureID = loadTexture("8k_sun.jpg");
+    GLuint jupiterTextureID = loadTexture("2k_jupiter.jpg");
+
     Sun sun(1.0f, 36, 18);
+    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 4.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+
 
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
@@ -235,6 +240,10 @@ int main() {
 
         // **Draw Sphere**
         sun.Draw(sunProgram, sunTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+
+        // Crtanje Jupitera
+        jupiter.Draw(planetProgram, jupiterTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();

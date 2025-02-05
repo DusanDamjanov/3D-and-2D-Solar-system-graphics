@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Sun.cpp" />
     <ClCompile Include="SV68-2021-3D.cpp" />
     <ClCompile Include="todo.cpp" />
@@ -146,6 +147,8 @@
     <None Include="orbit.frag" />
     <None Include="orbit.vert" />
     <None Include="packages.config" />
+    <None Include="planet.frag" />
+    <None Include="planet.vert" />
     <None Include="sun.frag" />
     <None Include="sun.vert" />
     <None Include="text.frag" />
@@ -211,6 +214,7 @@
     <Font Include="LiberationSans-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Planet.h" />
     <ClInclude Include="Sun.h" />
     <ClInclude Include="SV68-2021-3D.h" />
   </ItemGroup>

@@ -54,6 +54,9 @@
     <ClCompile Include="Sun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Planet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -99,6 +102,10 @@
     <None Include="sun.vert">
       <Filter>Source Files\Shader Files\Planets</Filter>
     </None>
+    <None Include="planet.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="planet.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="ariel-texture.jpg">
@@ -274,6 +281,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Planet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
