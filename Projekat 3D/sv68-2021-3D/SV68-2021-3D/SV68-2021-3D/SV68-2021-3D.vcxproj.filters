@@ -43,6 +43,9 @@
     <Filter Include="Source Files\Shader Files\Planets">
       <UniqueIdentifier>{5af9367a-fabd-4147-8f06-38f7279d347a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Planets\new">
+      <UniqueIdentifier>{647f2be7-4ff4-4d66-9bbf-f8ead740215c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SV68-2021-3D.cpp">
@@ -262,13 +265,40 @@
       <Filter>Resource Files\Planets</Filter>
     </Image>
     <Image Include="2k_jupiter.jpg">
-      <Filter>Resource Files\Planets</Filter>
+      <Filter>Resource Files\Planets\new</Filter>
     </Image>
     <Image Include="8k_sun.jpg">
-      <Filter>Resource Files\Planets</Filter>
+      <Filter>Resource Files\Planets\new</Filter>
     </Image>
     <Image Include="earth2k.jpg">
-      <Filter>Resource Files\Planets</Filter>
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_earth_clouds.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_mars.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_mercury.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_moon.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_neptune.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_saturn.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_saturn_ring.png">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_uranus.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_venus.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

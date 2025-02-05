@@ -155,7 +155,16 @@
     <None Include="text.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="2k_earth_clouds.jpg" />
     <Image Include="2k_jupiter.jpg" />
+    <Image Include="2k_mars.jpg" />
+    <Image Include="2k_mercury.jpg" />
+    <Image Include="2k_moon.jpg" />
+    <Image Include="2k_neptune.jpg" />
+    <Image Include="2k_saturn.jpg" />
+    <Image Include="2k_saturn_ring.png" />
+    <Image Include="2k_uranus.jpg" />
+    <Image Include="2k_venus.jpg" />
     <Image Include="8k_sun.jpg" />
     <Image Include="ariel-texture.jpg" />
     <Image Include="ariel-trivia.png" />

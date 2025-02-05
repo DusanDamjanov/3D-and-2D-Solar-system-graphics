@@ -8,11 +8,11 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);  // Kamera gleda sa strane
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-float yaw = -90.0f, pitch = 0.0f;  // Rotacija kamere (horizontalno i vertikalno)
-float cameraSpeed = 0.05f; // Brzina kretanja
-float sensitivity = 0.1f;  // Osetljivost misa
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastX = 400, lastY = 300;
+float fov = 45.0f;
 bool firstMouse = true;
-double lastX = 400, lastY = 300;
 
 
 void checkOpenGLError(const std::string& location) {
@@ -148,20 +148,24 @@ GLuint createProgram(const char* vertexShaderPath, const char* fragmentShaderPat
 
 
 glm::mat4 calculateCameraMatrix() {
-    glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 5.0f); // Kamera je na Z = 5
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);  // Gleda ka centru scene (Sunce)
-    glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f); // Definiše šta je "gore" u svetu
+    //glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 5.0f); // Kamera je na Z = 5
+    //glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);  // Gleda ka centru scene (Sunce)
+    //glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f); // Definiše šta je "gore" u svetu
 
-    return glm::lookAt(cameraPosition, cameraTarget, upVector);
+    //return glm::lookAt(cameraPosition, cameraTarget, upVector);
+
+    return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
 
 glm::mat4 calculateProjectionMatrix(int screenWidth, int screenHeight) {
-    float fov = glm::radians(45.0f); // 45 stepeni vidnog polja
-    float aspectRatio = (float)screenWidth / (float)screenHeight;
-    float nearPlane = 0.1f;
-    float farPlane = 100.0f;
+    //float fov = glm::radians(45.0f); // 45 stepeni vidnog polja
+    //float aspectRatio = (float)screenWidth / (float)screenHeight;
+    //float nearPlane = 0.1f;
+    //float farPlane = 100.0f;
 
-    return glm::perspective(fov, aspectRatio, nearPlane, farPlane);
+    //return glm::perspective(fov, aspectRatio, nearPlane, farPlane);
+
+    return glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 }
 
 // Funkcija za učitavanje teksture
@@ -201,8 +205,57 @@ GLuint loadTexture(const char* filePath) {
 }
 
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
 
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // Obrnuto jer koordinate idu od gore na dole
+    lastX = xpos;
+    lastY = ypos;
 
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f) pitch = 89.0f;
+    if (pitch < -89.0f) pitch = -89.0f;
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (fov >= 1.0f && fov <= 45.0f) fov -= yoffset;
+    if (fov <= 1.0f) fov = 1.0f;
+    if (fov >= 45.0f) fov = 45.0f;
+}
+
+void processInput(GLFWwindow* window, float deltaTime) {
+    float cameraSpeed = 2.5f * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+        std::cout << "Pritisnuli ste ESC. Sve se gasi....";
+    }
+}
 
 
 
@@ -210,6 +263,12 @@ int main() {
     int screenWidth = 800, screenHeight = 600;
     GLFWwindow* window = initializeOpenGL(screenWidth, screenHeight, "3D Suncev sistem");
     if (!window) return -1;
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    glfwSetScrollCallback(window, scroll_callback);
+
 
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
     GLuint planetProgram = createProgram("planet.vert", "planet.frag");
@@ -230,10 +289,10 @@ int main() {
         glm::mat4 viewMatrix = calculateCameraMatrix();
         glm::mat4 projectionMatrix = calculateProjectionMatrix(screenWidth, screenHeight);
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window, true);
-            std::cout << "Pritisnuli ste ESC. Sve se gasi....";
-        }
+       
+        processInput(window, deltaTime);
+
+
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set background color to dark gray
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
