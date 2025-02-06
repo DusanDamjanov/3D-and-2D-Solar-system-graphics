@@ -108,7 +108,9 @@
     <None Include="planet.vert">
       <Filter>Source Files\Shader Files\Planets</Filter>
     </None>
-    <None Include="planet.frag" />
+    <None Include="planet.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ariel-texture.jpg">

@@ -83,7 +83,6 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
     glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
-    //glDisable(GL_CULL_FACE);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -274,11 +273,19 @@ int main() {
     GLuint planetProgram = createProgram("planet.vert", "planet.frag");
 
     GLuint sunTextureID = loadTexture("8k_sun.jpg");
+    //GLuint mercuryTextureID = loadTexture("2k_mercury.jpg");
+    //GLuint venusTextureID = loadTexture("2k_venus.jpg");
+    //GLuint earthTextureID = loadTexture("earth2k.jpg");
+    //GLuint marsTextureID = loadTexture("2k_mars.jpg");
     GLuint jupiterTextureID = loadTexture("2k_jupiter.jpg");
 
-    Sun sun(1.0f, 36, 18);
-    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 4.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
 
+    Sun sun(1.0f, 36, 18);
+    //Planet mercury(0.3f, 36, 18, 35.0f, 40.0f, 1.5f); // Merkur
+    //Planet venus(0.55f, 36, 18, 25.0f, 30.0f, 2.0f);  // Venera
+    //Planet earth(0.5f, 36, 18, 30.0f, 30.0f, 2.5f);  // Zemlja
+    //Planet mars(0.4f, 36, 18, 25.0f, 25.0f, 3.2f);   // Mars
+    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 4.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
 
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
@@ -301,6 +308,10 @@ int main() {
         sun.Draw(sunProgram, sunTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
 
         // Crtanje Jupitera
+        //mercury.Draw(planetProgram, mercuryTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+        //venus.Draw(planetProgram, venusTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+        //earth.Draw(planetProgram, earthTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+        //mars.Draw(planetProgram, marsTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
         jupiter.Draw(planetProgram, jupiterTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
 
 

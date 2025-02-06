@@ -10,6 +10,12 @@ out vec4 FragColor;
 uniform sampler2D sunTexture;
 
 void main() {
-    // Koristi samo teksturu za prikaz Sunca
-    FragColor = texture(sunTexture, TexCoord);
+    // Učitavanje boje iz teksture Sunca
+    vec4 texColor = texture(sunTexture, TexCoord);
+    
+    // Emisivno osvetljenje - Sunce zrači svetlost
+    vec3 emission = texColor.rgb * 3.0; // Pojačavamo sjaj Sunca [izmedju 3 i 4 je najbolje]
+
+    // Kombinujemo teksturu i emisiju
+    FragColor = vec4(emission, texColor.a);
 }
