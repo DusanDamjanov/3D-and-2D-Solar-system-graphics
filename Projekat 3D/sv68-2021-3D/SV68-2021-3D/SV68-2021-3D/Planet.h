@@ -32,7 +32,9 @@ public:
     Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance);
     ~Planet();
 
-    void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos);
+    glm::vec3 getPosition();
+
+    void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos, float speedMultiplier);
 };
 
 #endif // PLANET_H

@@ -21,10 +21,10 @@
 
 //FIXME2: ne umem da namestim da se sa normalama tekstura prikazuje kako treba, iz nekog razloga onda tekstura poludi i sjebe se
 
-//1️⃣ Merkur
-//2️⃣ Venera
-//3️⃣ Zemlja
-//4️⃣ Mars
+//1️⃣ Merkur [DONE]
+//2️⃣ Venera [DONE]
+//3️⃣ Zemlja [DONE]
+//4️⃣ Mars	[DONE]
 //5️⃣ Jupiter
 //6️⃣ Saturn
 //7️⃣ Uran

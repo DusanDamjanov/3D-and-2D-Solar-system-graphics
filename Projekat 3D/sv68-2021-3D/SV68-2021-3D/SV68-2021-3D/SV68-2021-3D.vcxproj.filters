@@ -60,6 +60,9 @@
     <ClCompile Include="Planet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Moon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -302,6 +305,27 @@
     <Image Include="2k_venus.jpg">
       <Filter>Resource Files\Planets\new</Filter>
     </Image>
+    <Image Include="2k_earth_with_clouds.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_deimos.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_phobos.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_callisto.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_europa.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_ganymede.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
+    <Image Include="2k_io.jpg">
+      <Filter>Resource Files\Planets\new</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="LiberationSans-Regular.ttf">
@@ -316,6 +340,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Planet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Moon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

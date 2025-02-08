@@ -2,11 +2,10 @@
 
 out vec4 FragColor;
 
-in vec2 TexCoord; // Teksturne koordinate iz vertex šejdera
+in vec2 TexCoord;
 
 uniform sampler2D moonTexture; // Tekstura planete
 
-void main()
-{
-    FragColor = texture(moonTexture, TexCoord); // Prikaz teksture
+void main() {
+    FragColor = texture(moonTexture, TexCoord);
 }

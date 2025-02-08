@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Moon.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Sun.cpp" />
     <ClCompile Include="SV68-2021-3D.cpp" />
@@ -155,12 +156,19 @@
     <None Include="text.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="2k_callisto.jpg" />
+    <Image Include="2k_deimos.jpg" />
     <Image Include="2k_earth_clouds.jpg" />
+    <Image Include="2k_earth_with_clouds.jpg" />
+    <Image Include="2k_europa.jpg" />
+    <Image Include="2k_ganymede.jpg" />
+    <Image Include="2k_io.jpg" />
     <Image Include="2k_jupiter.jpg" />
     <Image Include="2k_mars.jpg" />
     <Image Include="2k_mercury.jpg" />
     <Image Include="2k_moon.jpg" />
     <Image Include="2k_neptune.jpg" />
+    <Image Include="2k_phobos.jpg" />
     <Image Include="2k_saturn.jpg" />
     <Image Include="2k_saturn_ring.png" />
     <Image Include="2k_uranus.jpg" />
@@ -223,6 +231,7 @@
     <Font Include="LiberationSans-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Moon.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="Sun.h" />
     <ClInclude Include="SV68-2021-3D.h" />

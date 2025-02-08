@@ -1,11 +1,12 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include "Planet.h"
+#include "Moon.h"
 
 
-Planet::Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance)
-    : radius(r), sectorCount(sectors), stackCount(stacks),
-    rotationSpeed(rotSpeed), orbitSpeed(orbSpeed), distanceFromSun(distance) {
+
+Moon::Moon(Planet& planet, float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance)
+    : parentPlanet(planet), radius(r), sectorCount(sectors), stackCount(stacks),
+    rotationSpeed(rotSpeed), orbitSpeed(orbSpeed), distanceFromPlanet(distance) {
 
     // Generate sphere vertices and indices
     generateVertices();
@@ -16,13 +17,13 @@ Planet::Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed,
 }
 
 
-Planet::~Planet() {
+Moon::~Moon() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 }
 
-void Planet::generateVertices() {
+void Moon::generateVertices() {
     float x, y, z, xy;
     float s, t;
     float sectorStep = (float)(2 * M_PI / sectorCount);
@@ -57,7 +58,7 @@ void Planet::generateVertices() {
     }
 }
 
-void Planet::generateIndices() {
+void Moon::generateIndices() {
     int k1, k2;
     for (int i = 0; i < stackCount; ++i) {
         k1 = i * (sectorCount + 1);
@@ -88,7 +89,7 @@ void Planet::generateIndices() {
     }
 }
 
-void Planet::setupMesh() {
+void Moon::setupMesh() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -112,7 +113,7 @@ void Planet::setupMesh() {
 }
 
 
-void Planet::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos, float speedMultiplier) {
+void Moon::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, float speedMultiplier) {
     // Update rotation and orbit angles
     orbitAngle += orbitSpeed * deltaTime * speedMultiplier;
     if (orbitAngle > 360.0f) orbitAngle -= 360.0f;
@@ -120,27 +121,20 @@ void Planet::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view,
     rotationAngle += rotationSpeed * deltaTime;
     if (rotationAngle > 360.0f) rotationAngle -= 360.0f;
 
-    // Compute the planet's position in its orbit
+    // Compute moon's position relative to its planet
     float orbitRadians = glm::radians(orbitAngle);
-    glm::vec3 position = glm::vec3(
-        cos(orbitRadians) * distanceFromSun,
+    glm::vec3 planetPos = parentPlanet.getPosition();
+    glm::vec3 position = planetPos + glm::vec3(
+        cos(orbitRadians) * distanceFromPlanet,
         0.0f,
-        sin(orbitRadians) * distanceFromSun
+        sin(orbitRadians) * distanceFromPlanet
     );
 
     // Compute model transformation matrix
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, position); // Postavi planetu u orbitu
-
-    // **Prvo rotacija oko Y ose za normalnu rotaciju planete**
+    model = glm::translate(model, position);
     model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-
-    // **Zatim ispravi početnu orijentaciju (ako je potrebno)**
-    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-    // Na kraju skaliraj model
     model = glm::scale(model, glm::vec3(radius));
-
 
     // Use shader program
     glUseProgram(shaderProgram);
@@ -149,25 +143,14 @@ void Planet::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view,
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "cameraPos"), 1, glm::value_ptr(cameraPos));
 
     // Bind texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glUniform1i(glGetUniformLocation(shaderProgram, "planetTexture"), 0);
+    glUniform1i(glGetUniformLocation(shaderProgram, "moonTexture"), 0);
 
     // Bind VAO and draw
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, sphere_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-}
-
-
-glm::vec3 Planet::getPosition() {
-    float orbitRadians = glm::radians(orbitAngle);
-    return glm::vec3(
-        cos(orbitRadians) * distanceFromSun,
-        0.0f,
-        sin(orbitRadians) * distanceFromSun
-    );
 }

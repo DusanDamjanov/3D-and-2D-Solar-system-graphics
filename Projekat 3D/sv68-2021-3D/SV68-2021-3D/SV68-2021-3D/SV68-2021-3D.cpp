@@ -4,6 +4,12 @@
 #include "SV68-2021-3D.h"
 
 
+
+float speedMultiplier = 1.0;
+double lastKeyPressTime = 0.0;
+
+int screenWidth = 800, screenHeight = 600;
+
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);  // Kamera gleda sa strane
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -239,27 +245,69 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     if (fov >= 45.0f) fov = 45.0f;
 }
 
+//funkcija da proveri slucajne visestruke klikove
+bool isOneClick(double& lastKeyPressTime) {
+    double debounceDelay = 0.5;
+    double currentTime = glfwGetTime(); // trenutno vreme (sekunde od pokretanja aplikacije)
+
+    if (currentTime - lastKeyPressTime > debounceDelay || lastKeyPressTime == 0.0f) {
+        lastKeyPressTime = currentTime; // update vreme poslednje obrade
+        return false;
+    }
+    return true;
+}
+
 void processInput(GLFWwindow* window, float deltaTime) {
     float cameraSpeed = 2.5f * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
         std::cout << "Pritisnuli ste ESC. Sve se gasi....";
+    }
+    
+    if ((glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) && speedMultiplier <= 20 && !isOneClick(lastKeyPressTime))
+    {
+        speedMultiplier += 5;
+    }
+
+    if ((glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) && speedMultiplier > 0 && !isOneClick(lastKeyPressTime))
+    {
+        speedMultiplier -= 5;
+        if (speedMultiplier < 0) {
+            speedMultiplier = 1;
+        }
+    }
+
+    if ((glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS))
+    {
+        speedMultiplier = 0;
     }
 }
 
 
 
 int main() {
-    int screenWidth = 800, screenHeight = 600;
     GLFWwindow* window = initializeOpenGL(screenWidth, screenHeight, "3D Suncev sistem");
     if (!window) return -1;
 
@@ -268,27 +316,58 @@ int main() {
 
     glfwSetScrollCallback(window, scroll_callback);
 
-
+    //===============================PROGRAMS=====================================
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
     GLuint planetProgram = createProgram("planet.vert", "planet.frag");
-
+    GLuint moonProgram = createProgram("moon.vert", "moon.frag");
+    //===============================TEXTURES=====================================
+    //SUN
     GLuint sunTextureID = loadTexture("8k_sun.jpg");
-    //GLuint mercuryTextureID = loadTexture("2k_mercury.jpg");
-    //GLuint venusTextureID = loadTexture("2k_venus.jpg");
-    //GLuint earthTextureID = loadTexture("earth2k.jpg");
-    //GLuint marsTextureID = loadTexture("2k_mars.jpg");
+    //PLANETS
+    GLuint mercuryTextureID = loadTexture("2k_mercury.jpg");
+    GLuint venusTextureID = loadTexture("2k_venus.jpg");
+    GLuint earthTextureID = loadTexture("2k_earth_with_clouds.jpg");
+    GLuint marsTextureID = loadTexture("2k_mars.jpg");
     GLuint jupiterTextureID = loadTexture("2k_jupiter.jpg");
+    //MOONS
+    GLuint moonTextureID = loadTexture("2k_moon.jpg");
+    GLuint deimosTextureID = loadTexture("2k_deimos.jpg");
+    GLuint phobosTextureID = loadTexture("2k_phobos.jpg");
+    GLuint ioTextureID = loadTexture("2k_io.jpg");
+    GLuint europaTextureID = loadTexture("2k_europa.jpg");
+    GLuint ganymedeTextureID = loadTexture("2k_ganymede.jpg");
+    GLuint callistoTextureID = loadTexture("2k_callisto.jpg");
 
-
+    //===============================SPACE BODIES INITS=====================================
+    //SUN
     Sun sun(1.0f, 36, 18);
-    //Planet mercury(0.3f, 36, 18, 35.0f, 40.0f, 1.5f); // Merkur
-    //Planet venus(0.55f, 36, 18, 25.0f, 30.0f, 2.0f);  // Venera
-    //Planet earth(0.5f, 36, 18, 30.0f, 30.0f, 2.5f);  // Zemlja
-    //Planet mars(0.4f, 36, 18, 25.0f, 25.0f, 3.2f);   // Mars
-    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 4.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    
+    //MERCURY
+    Planet mercury(0.3f, 36, 18, 35.0f, 40.0f, 1.5f); // Merkur
+    
+    //VENUS
+    Planet venus(0.55f, 36, 18, 25.0f, 30.0f, 2.0f);  // Venera
+    
+    //EARTH
+    Planet earth(0.5f, 36, 18, 30.0f, 30.0f, 3.0f);  // Zemlja
+    Moon moon(earth, 0.2f, 36, 18, 20.0f, 50.0f, 0.5f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromEarth)
+    
+    //MARS
+    Planet mars(0.4f, 36, 18, 25.0f, 25.0f, 4.0f);   // Mars
+    Moon phobos(mars, 0.18f, 36, 18, 15.0f, 80.0f, 0.2f);  // Fobos - manji i bliži Marsu
+    Moon deimos(mars, 0.15f, 36, 18, 10.0f, 40.0f, 0.5f);  // Deimos - veći i dalje od Marsa
+
+    
+    //JUPITER
+    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 5.5f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Moon io(jupiter, 0.2f, 36, 18, 15.0f, 150.0f, 0.8f);      // Io - blizu Jupitera, najbrži
+    Moon europa(jupiter, 0.18f, 36, 18, 10.0f, 100.0f, 1.2f);   // Evropa - ledena površina
+    Moon ganymede(jupiter, 0.23f, 36, 18, 8.0f, 70.0f, 1.4f);  // Ganimed - najveći mesec
+    Moon callisto(jupiter, 0.21f, 36, 18, 5.0f, 40.0f, 1.6f);  // Kalisto - najudaljeniji
 
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
+        
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -304,15 +383,33 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set background color to dark gray
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // **Draw Sphere**
-        sun.Draw(sunProgram, sunTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
 
-        // Crtanje Jupitera
-        //mercury.Draw(planetProgram, mercuryTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
-        //venus.Draw(planetProgram, venusTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
-        //earth.Draw(planetProgram, earthTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
-        //mars.Draw(planetProgram, marsTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
-        jupiter.Draw(planetProgram, jupiterTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+        //[SPACE BODIES DRAWING]
+        //SUN
+        sun.Draw(sunProgram, sunTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
+        
+        //MERCURY
+        mercury.Draw(planetProgram, mercuryTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        
+        //VENUS
+        venus.Draw(planetProgram, venusTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        
+        //EARTH
+        earth.Draw(planetProgram, earthTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        moon.Draw(moonProgram, moonTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        
+        //MARS
+        mars.Draw(planetProgram, marsTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        phobos.Draw(moonProgram, phobosTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        deimos.Draw(moonProgram, deimosTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        
+        //JUPITER
+        jupiter.Draw(planetProgram, jupiterTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        io.Draw(moonProgram, ioTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        europa.Draw(moonProgram, europaTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        ganymede.Draw(moonProgram, ganymedeTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        callisto.Draw(moonProgram, callistoTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+
 
 
         glfwSwapBuffers(window);
