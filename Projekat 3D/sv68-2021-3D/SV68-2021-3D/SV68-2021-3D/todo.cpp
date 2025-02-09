@@ -1,6 +1,6 @@
 ﻿//[DONE]: Treba da bude pravilno ogranicen na 60 frejmova u sekundi (ne Vsync nego bas 60fps).
 
-//TODO: Neka sada svi objekti Suncevog sistema budu trodimenzionalni i u pravilnim orbitama.
+//[DONE]: Neka sada svi objekti Suncevog sistema budu trodimenzionalni i u pravilnim orbitama.
 
 //TODO: Implementirajte Fongov model osvjetljenja sa suncem kao tackastim osvjetljenjem. [ovo preskoci za sada...imas dole FIXME2 koji objasnjava zasto]
 
@@ -25,7 +25,8 @@
 //2️⃣ Venera [DONE]
 //3️⃣ Zemlja [DONE]
 //4️⃣ Mars	[DONE]
-//5️⃣ Jupiter
-//6️⃣ Saturn
-//7️⃣ Uran
-//8️⃣ Neptun
+//5️⃣ Jupiter[DONE]
+//6️⃣ Saturn [DONE]
+//7️⃣ Uran	[DONE]
+//7️⃣ Pluton	[DONE]
+//8️⃣ Neptun	[DONE]

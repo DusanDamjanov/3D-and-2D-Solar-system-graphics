@@ -73,12 +73,6 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
     }
     glfwMakeContextCurrent(window);
 
-    //if (glewInit() != GLEW_OK) 
-    //    std::cerr << "GLEW initialization failed!" << std::endl;
-    //    return nullptr;
-    //}
-    //checkOpenGLError("After glew init");
-
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "GLAD initialization failed!" << std::endl;
         return nullptr;
@@ -95,8 +89,6 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
 
     return window;
 }
-
-
 
 // Funkcija za učitavanje šejdera
 std::string loadShaderSource(const char* filePath) {
@@ -153,23 +145,10 @@ GLuint createProgram(const char* vertexShaderPath, const char* fragmentShaderPat
 
 
 glm::mat4 calculateCameraMatrix() {
-    //glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 5.0f); // Kamera je na Z = 5
-    //glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);  // Gleda ka centru scene (Sunce)
-    //glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f); // Definiše šta je "gore" u svetu
-
-    //return glm::lookAt(cameraPosition, cameraTarget, upVector);
-
     return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
 
 glm::mat4 calculateProjectionMatrix(int screenWidth, int screenHeight) {
-    //float fov = glm::radians(45.0f); // 45 stepeni vidnog polja
-    //float aspectRatio = (float)screenWidth / (float)screenHeight;
-    //float nearPlane = 0.1f;
-    //float farPlane = 100.0f;
-
-    //return glm::perspective(fov, aspectRatio, nearPlane, farPlane);
-
     return glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 }
 
@@ -198,8 +177,8 @@ GLuint loadTexture(const char* filePath) {
 
         stbi_image_free(data);
 
-        std::cout << "Texture Loaded Successfully: " << filePath << std::endl;
-        std::cout << "Width: " << width << ", Height: " << height << ", Channels: " << nrChannels << std::endl;
+        //std::cout << "Texture Loaded Successfully: " << filePath << std::endl;
+        //std::cout << "Width: " << width << ", Height: " << height << ", Channels: " << nrChannels << std::endl;
     }
     else {
         std::cerr << "Failed to load texture: " << filePath << std::endl;
@@ -320,23 +299,39 @@ int main() {
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
     GLuint planetProgram = createProgram("planet.vert", "planet.frag");
     GLuint moonProgram = createProgram("moon.vert", "moon.frag");
+    GLuint ringProgram = createProgram("ring.vert", "ring.frag");
+
+
     //===============================TEXTURES=====================================
-    //SUN
-    GLuint sunTextureID = loadTexture("8k_sun.jpg");
     //PLANETS
-    GLuint mercuryTextureID = loadTexture("2k_mercury.jpg");
-    GLuint venusTextureID = loadTexture("2k_venus.jpg");
-    GLuint earthTextureID = loadTexture("2k_earth_with_clouds.jpg");
-    GLuint marsTextureID = loadTexture("2k_mars.jpg");
-    GLuint jupiterTextureID = loadTexture("2k_jupiter.jpg");
+    GLuint sunTextureID = loadTexture("sun-tex.jpg");
+    GLuint mercuryTextureID = loadTexture("mercury-tex.jpg");
+    GLuint venusTextureID = loadTexture("venus-tex.jpg");
+    GLuint earthTextureID = loadTexture("earth-tex.jpg");
+    GLuint marsTextureID = loadTexture("mars-tex.jpg");
+    GLuint jupiterTextureID = loadTexture("jupiter-tex.jpg");
+    GLuint saturnTextureID = loadTexture("saturn-tex.jpg");
+    GLuint ringTextureID = loadTexture("saturn-ring-tex.jpg");
+    GLuint uranusTextureID = loadTexture("uranus-tex.jpg");
+    GLuint plutoTextureID = loadTexture("pluto-tex.jpg");
+    GLuint neptuneTextureID = loadTexture("neptune-tex.jpg");
+
     //MOONS
-    GLuint moonTextureID = loadTexture("2k_moon.jpg");
-    GLuint deimosTextureID = loadTexture("2k_deimos.jpg");
-    GLuint phobosTextureID = loadTexture("2k_phobos.jpg");
-    GLuint ioTextureID = loadTexture("2k_io.jpg");
-    GLuint europaTextureID = loadTexture("2k_europa.jpg");
-    GLuint ganymedeTextureID = loadTexture("2k_ganymede.jpg");
-    GLuint callistoTextureID = loadTexture("2k_callisto.jpg");
+    GLuint moonTextureID = loadTexture("moon-tex.jpg");
+    GLuint deimosTextureID = loadTexture("deimos-tex.jpg");
+    GLuint phobosTextureID = loadTexture("phobos-tex.jpg");
+    GLuint ioTextureID = loadTexture("io-tex.jpg");
+    GLuint europaTextureID = loadTexture("europa-tex.jpg");
+    GLuint ganymedeTextureID = loadTexture("ganymede-tex.jpg");
+    GLuint callistoTextureID = loadTexture("callisto-tex.jpg");
+    GLuint titanTextureID = loadTexture("titan-tex.jpg");
+    GLuint rheaTextureID = loadTexture("rhea-tex.jpg");
+    GLuint iapetusTextureID = loadTexture("iapetus-tex.jpg");
+    GLuint umbrielTextureID = loadTexture("umbriel-tex.jpg");
+    GLuint arielTextureID = loadTexture("ariel-tex.jpg");
+    GLuint mirandaTextureID = loadTexture("miranda-tex.jpg");
+    GLuint tritonTextureID = loadTexture("triton-tex.jpg");
+
 
     //===============================SPACE BODIES INITS=====================================
     //SUN
@@ -365,6 +360,27 @@ int main() {
     Moon ganymede(jupiter, 0.23f, 36, 18, 8.0f, 70.0f, 1.4f);  // Ganimed - najveći mesec
     Moon callisto(jupiter, 0.21f, 36, 18, 5.0f, 40.0f, 1.6f);  // Kalisto - najudaljeniji
 
+    //SATURN
+    Planet saturn(0.65f, 36, 18, 18.0f, 18.0f, 8.5f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    SaturnRing ring(100, 0.6f, 1.0f);
+    Moon titan(saturn, 0.27f, 36, 18, 10.0f, 50.0f, 0.8f);   // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSaturn)
+    Moon rhea(saturn, 0.2f, 36, 18, 8.0f, 40.0f, 1.2f);    
+    Moon iapetus(saturn, 0.19f, 36, 18, 6.0f, 30.0f, 1.6f); 
+
+    //URANUS
+    Planet uranus(0.55f, 36, 18, 17.0f, 15.0f, 10.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Moon umbriel(uranus, 0.22f, 36, 18, 6.0f, 35.0f, 0.8f);  // Umbriel - tamna površina
+    Moon ariel(uranus, 0.2f, 36, 18, 5.0f, 30.0f, 0.5f);    // Ariel - ledena površina
+    Moon miranda(uranus, 0.2f, 36, 18, 5.0f, 30.0f, 1.1f);    // Ariel - ledena površina
+
+    //PLUTO
+    Planet pluto(0.25f, 36, 18, 10.0f, 10.0f, 12.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+
+    //NEPTUNE
+    Planet neptune(0.50f, 36, 18, 16.0f, 14.0f, 13.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Moon triton(neptune, 0.22f, 36, 18, 9.0f, 55.0f, 0.5f);   // Triton - najveći mesec
+
+
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         
@@ -375,12 +391,9 @@ int main() {
         glm::mat4 viewMatrix = calculateCameraMatrix();
         glm::mat4 projectionMatrix = calculateProjectionMatrix(screenWidth, screenHeight);
 
-       
         processInput(window, deltaTime);
 
-
-
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set background color to dark gray
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -410,6 +423,25 @@ int main() {
         ganymede.Draw(moonProgram, ganymedeTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
         callisto.Draw(moonProgram, callistoTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
 
+        //SATURN
+        saturn.Draw(planetProgram, saturnTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        ring.Draw(ringProgram, ringTextureID, viewMatrix, projectionMatrix, saturn.getPosition());
+        titan.Draw(moonProgram, titanTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        rhea.Draw(moonProgram, rheaTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        iapetus.Draw(moonProgram, iapetusTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+
+        //URANUS
+        uranus.Draw(planetProgram, uranusTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        umbriel.Draw(moonProgram, umbrielTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        ariel.Draw(moonProgram, arielTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        miranda.Draw(moonProgram, mirandaTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
+        
+        //PLUTO
+        pluto.Draw(planetProgram, plutoTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+
+        //NEPTUNE
+        neptune.Draw(planetProgram, neptuneTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
+        triton.Draw(moonProgram, tritonTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
 
 
         glfwSwapBuffers(window);

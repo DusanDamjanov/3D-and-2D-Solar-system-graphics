@@ -26,6 +26,7 @@
 #include "Sun.h"
 #include "Planet.h"
 #include "Moon.h"
+#include "SaturnRing.h"
 
 // Deklaracija funkcije za učitavanje teksture
 GLuint loadTexture(const char* filePath);
