@@ -29,6 +29,8 @@ public:
     Sun(float r, int sectors, int stacks);
     ~Sun();
 
+    glm::vec3 getPosition() const;
+    float getRadius() const;
     void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos);
 };
 

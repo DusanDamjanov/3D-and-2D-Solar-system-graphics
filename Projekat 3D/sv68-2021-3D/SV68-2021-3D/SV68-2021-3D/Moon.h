@@ -34,6 +34,9 @@ public:
     Moon(Planet& planet, float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance);
     ~Moon();
 
+    glm::vec3 getPosition() const;
+    float getRadius() const;
+
     void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, float speedMultiplier);
 };
 

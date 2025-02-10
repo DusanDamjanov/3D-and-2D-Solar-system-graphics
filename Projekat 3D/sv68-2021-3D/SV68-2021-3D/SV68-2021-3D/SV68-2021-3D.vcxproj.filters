@@ -43,6 +43,9 @@
     <Filter Include="Source Files\Shader Files\Planets">
       <UniqueIdentifier>{5af9367a-fabd-4147-8f06-38f7279d347a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Shader Files\recycle bin">
+      <UniqueIdentifier>{6c7dcd48-fc8d-4b39-bb51-a7e46ee317eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SV68-2021-3D.cpp">
@@ -70,18 +73,6 @@
       <Filter>Source Files\Shader Files</Filter>
     </None>
     <None Include="details.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="orbit.frag">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="orbit.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="text.frag">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="text.vert">
       <Filter>Source Files\Shader Files</Filter>
     </None>
     <None Include="asteroids.frag">
@@ -119,6 +110,18 @@
     </None>
     <None Include="ring.frag">
       <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="orbit.frag">
+      <Filter>Source Files\Shader Files\recycle bin</Filter>
+    </None>
+    <None Include="orbit.vert">
+      <Filter>Source Files\Shader Files\recycle bin</Filter>
+    </None>
+    <None Include="text.frag">
+      <Filter>Source Files\Shader Files\recycle bin</Filter>
+    </None>
+    <None Include="text.vert">
+      <Filter>Source Files\Shader Files\recycle bin</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

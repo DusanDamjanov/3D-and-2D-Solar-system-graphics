@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
 // **Include GLM for Matrix Operations**
 #include <glm/glm.hpp>

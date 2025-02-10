@@ -8,7 +8,7 @@
 float speedMultiplier = 1.0;
 double lastKeyPressTime = 0.0;
 
-int screenWidth = 800, screenHeight = 600;
+int screenWidth = 1600, screenHeight = 800;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);  // Kamera gleda sa strane
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -81,8 +81,8 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
 
 
     glEnable(GL_DEPTH_TEST);
-    glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -282,6 +282,122 @@ void processInput(GLFWwindow* window, float deltaTime) {
     {
         speedMultiplier = 0;
     }
+
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);  // Standardno punjenje poligona
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);  // Samo ivice
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_POINT); // Samo tjemena
+    }
+}
+
+
+//render fja za details prikaz planete
+void renderInfoBox(float x, float y, float width, float height, GLuint shaderProgram, const char* textureName) {
+    GLuint texture = loadTexture(textureName);
+
+    if (texture == 0) {
+        std::cerr << "Error: Nevalidni Texture ID" << std::endl;
+        return;
+    }
+
+    // Postavi ortografsku projekciju za prikazivanje informacija
+    glm::mat4 orthoProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+    glUseProgram(shaderProgram);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(orthoProjection));
+
+
+    // Prilagodimo visinu i širinu da budu u NDC prostoru
+    width = width * 2.0f;
+    height = height * 2.0f;
+
+    // Verteksi za pravougaonik (prikazuje se u ekranskom prostoru)
+    float vertices[6][4] = {
+        {x, y, 0.0f, 1.0f},  
+        {x, y - height, 0.0f, 0.0f}, 
+        {x + width, y - height, 1.0f, 0.0f},
+
+        {x, y, 0.0f, 1.0f},  
+        {x + width, y - height, 1.0f, 0.0f},
+        {x + width, y, 1.0f, 1.0f} 
+    };
+
+
+    GLuint VAO, VBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+
+    // Binduj teksturu
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Setuj uniform za teksturu
+    glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
+
+    // Renderuj pravougaonik
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Očisti resurse
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+}
+
+void shouldShowDetails(GLuint shaderProgram, Sun& sun, std::unordered_map<std::string, Moon*> moons, 
+    std::unordered_map<std::string, Planet*> planets) {
+
+    float minDistance = 0.2f;
+
+    if (glm::distance(cameraPos, sun.getPosition()) < (sun.getRadius() + minDistance)) {
+        glDisable(GL_DEPTH_TEST);
+        renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, shaderProgram, "sun-trivia.png");
+        glEnable(GL_DEPTH_TEST);
+        return;
+    }
+    
+    for (const auto& pair : moons) {
+        const std::string& moonName = pair.first; 
+        Moon& moon = *pair.second;             
+        
+        if (glm::distance(cameraPos, moon.getPosition()) < (moon.getRadius() + minDistance)) {
+            std::string triviaPathStr = moonName + "-trivia.png";
+            const char* triviaPath = triviaPathStr.c_str();       
+
+            glDisable(GL_DEPTH_TEST);
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, shaderProgram, triviaPath);
+            glEnable(GL_DEPTH_TEST);
+            return;
+        }
+    }
+
+    for (const auto& pair : planets) {
+        const std::string& planetName = pair.first; 
+        Planet& planet = *pair.second;             
+        
+        if (glm::distance(cameraPos, planet.getPosition()) < (planet.getRadius() + minDistance)) {
+            std::string triviaPathStr = planetName + "-trivia.png";
+            const char* triviaPath = triviaPathStr.c_str();       
+
+            glDisable(GL_DEPTH_TEST);
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, shaderProgram, triviaPath);
+            glEnable(GL_DEPTH_TEST);
+            return;
+        }
+    }
 }
 
 
@@ -300,6 +416,7 @@ int main() {
     GLuint planetProgram = createProgram("planet.vert", "planet.frag");
     GLuint moonProgram = createProgram("moon.vert", "moon.frag");
     GLuint ringProgram = createProgram("ring.vert", "ring.frag");
+    GLuint triviaShaderProgram = createProgram("details.vert", "details.frag");
 
 
     //===============================TEXTURES=====================================
@@ -383,7 +500,7 @@ int main() {
 
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
-        
+       
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -443,6 +560,36 @@ int main() {
         neptune.Draw(planetProgram, neptuneTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
         triton.Draw(moonProgram, tritonTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
 
+        std::unordered_map<std::string, Planet*> planets = {
+            {"mercury", &mercury},
+            {"venus", &venus},
+            {"earth", &earth},
+            {"mars", &mars},
+            {"jupiter", &jupiter},
+            {"saturn", &saturn},
+            {"uranus", &uranus},
+            {"neptune", &neptune},
+            {"pluto", &pluto}
+        };
+
+        std::unordered_map<std::string, Moon*> moons = {
+            {"moon", &moon},               // Mesec Zemlje
+            {"deimos", &deimos},           // Mesec Marsa
+            {"phobos", &phobos},           // Mesec Marsa
+            {"io", &io},                   // Mesec Jupitera
+            {"europa", &europa},           // Mesec Jupitera
+            {"ganymede", &ganymede},       // Mesec Jupitera
+            {"callisto", &callisto},       // Mesec Jupitera
+            {"titan", &titan},             // Mesec Saturna
+            {"rhea", &rhea},               // Mesec Saturna
+            {"iapetus", &iapetus},         // Mesec Saturna
+            {"umbriel", &umbriel},         // Mesec Urana
+            {"ariel", &ariel},             // Mesec Urana
+            {"miranda", &miranda},         // Mesec Urana
+            {"triton", &triton}            // Mesec Neptuna
+        };
+
+        shouldShowDetails(triviaShaderProgram, sun, moons, planets);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -451,3 +598,5 @@ int main() {
     glfwTerminate();
     return 0;
 }
+
+

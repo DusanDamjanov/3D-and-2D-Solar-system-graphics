@@ -154,3 +154,17 @@ void Moon::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, c
     glDrawElements(GL_TRIANGLES, sphere_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
+
+float Moon::getRadius() const {
+    return radius;
+}
+
+glm::vec3 Moon::getPosition() const {
+    float orbitRadians = glm::radians(orbitAngle);
+    glm::vec3 planetPos = parentPlanet.getPosition(); // Uzmi poziciju planete
+    return planetPos + glm::vec3(
+        cos(orbitRadians) * distanceFromPlanet,
+        0.0f,
+        sin(orbitRadians) * distanceFromPlanet
+    );
+}

@@ -34,6 +34,8 @@ public:
 
     glm::vec3 getPosition();
 
+    float getRadius() const;
+
     void Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos, float speedMultiplier);
 };
 

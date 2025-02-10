@@ -143,3 +143,10 @@ void Sun::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, co
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+glm::vec3 Sun::getPosition() const {
+    return glm::vec3(0.0f, 0.0f, 0.0f); // Sunce je centrirano u (0,0,0)
+}
+
+float Sun::getRadius() const {
+    return radius;
+}

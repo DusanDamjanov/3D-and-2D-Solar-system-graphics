@@ -171,3 +171,7 @@ glm::vec3 Planet::getPosition() {
         sin(orbitRadians) * distanceFromSun
     );
 }
+
+float Planet::getRadius() const {
+    return radius;
+}
