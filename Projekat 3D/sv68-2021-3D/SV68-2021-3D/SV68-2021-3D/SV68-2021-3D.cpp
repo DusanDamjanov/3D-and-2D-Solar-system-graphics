@@ -9,6 +9,7 @@ float speedMultiplier = 1.0;
 double lastKeyPressTime = 0.0;
 
 int screenWidth = 1600, screenHeight = 800;
+bool showOrbits = false;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);  // Kamera gleda sa strane
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -278,6 +279,10 @@ void processInput(GLFWwindow* window, float deltaTime) {
         }
     }
 
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && !isOneClick(lastKeyPressTime)) {
+        showOrbits = !showOrbits;
+    }
+
     if ((glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS))
     {
         speedMultiplier = 0;
@@ -400,7 +405,12 @@ void shouldShowDetails(GLuint shaderProgram, Sun& sun, std::unordered_map<std::s
     }
 }
 
-
+void drawOrbits(std::unordered_map<std::string, Planet*> planets, GLuint shaderProgram, glm::mat4 viewMatrix, glm::mat4 projectionMatrix) {
+    for (const auto& pair : planets) {
+        Planet& planet = *pair.second;
+        planet.DrawOrbit(shaderProgram, viewMatrix, projectionMatrix);
+    }
+}
 
 int main() {
     GLFWwindow* window = initializeOpenGL(screenWidth, screenHeight, "3D Suncev sistem");
@@ -408,8 +418,8 @@ int main() {
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     glfwSetScrollCallback(window, scroll_callback);
+
 
     //===============================PROGRAMS=====================================
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
@@ -417,6 +427,7 @@ int main() {
     GLuint moonProgram = createProgram("moon.vert", "moon.frag");
     GLuint ringProgram = createProgram("ring.vert", "ring.frag");
     GLuint triviaShaderProgram = createProgram("details.vert", "details.frag");
+    GLuint orbitShaderProgram = createProgram("orbit.vert", "orbit.frag");
 
 
     //===============================TEXTURES=====================================
@@ -455,46 +466,46 @@ int main() {
     Sun sun(1.0f, 36, 18);
     
     //MERCURY
-    Planet mercury(0.3f, 36, 18, 35.0f, 40.0f, 1.5f); // Merkur
-    
+    Planet mercury(0.3f, 36, 18, 35.0f, 40.0f, 1.5f, 0.247f); // Merkur
+
     //VENUS
-    Planet venus(0.55f, 36, 18, 25.0f, 30.0f, 2.0f);  // Venera
+    Planet venus(0.55f, 36, 18, 25.0f, 30.0f, 2.0f, 0.0084f);  // Venera
     
     //EARTH
-    Planet earth(0.5f, 36, 18, 30.0f, 30.0f, 3.0f);  // Zemlja
+    Planet earth(0.5f, 36, 18, 30.0f, 30.0f, 3.0f, 0.02f);  // Zemlja
     Moon moon(earth, 0.2f, 36, 18, 20.0f, 50.0f, 0.5f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromEarth)
     
     //MARS
-    Planet mars(0.4f, 36, 18, 25.0f, 25.0f, 4.0f);   // Mars
+    Planet mars(0.4f, 36, 18, 25.0f, 25.0f, 4.0f, 0.11208f);   // Mars
     Moon phobos(mars, 0.18f, 36, 18, 15.0f, 80.0f, 0.2f);  // Fobos - manji i bliži Marsu
     Moon deimos(mars, 0.15f, 36, 18, 10.0f, 40.0f, 0.5f);  // Deimos - veći i dalje od Marsa
 
     
     //JUPITER
-    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 5.5f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 5.5f, 0.0581f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
     Moon io(jupiter, 0.2f, 36, 18, 15.0f, 150.0f, 0.8f);      // Io - blizu Jupitera, najbrži
     Moon europa(jupiter, 0.18f, 36, 18, 10.0f, 100.0f, 1.2f);   // Evropa - ledena površina
     Moon ganymede(jupiter, 0.23f, 36, 18, 8.0f, 70.0f, 1.4f);  // Ganimed - najveći mesec
     Moon callisto(jupiter, 0.21f, 36, 18, 5.0f, 40.0f, 1.6f);  // Kalisto - najudaljeniji
 
     //SATURN
-    Planet saturn(0.65f, 36, 18, 18.0f, 18.0f, 8.5f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Planet saturn(0.65f, 36, 18, 18.0f, 18.0f, 8.5f, 0.0678f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
     SaturnRing ring(100, 0.6f, 1.0f);
     Moon titan(saturn, 0.27f, 36, 18, 10.0f, 50.0f, 0.8f);   // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSaturn)
     Moon rhea(saturn, 0.2f, 36, 18, 8.0f, 40.0f, 1.2f);    
     Moon iapetus(saturn, 0.19f, 36, 18, 6.0f, 30.0f, 1.6f); 
 
     //URANUS
-    Planet uranus(0.55f, 36, 18, 17.0f, 15.0f, 10.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Planet uranus(0.55f, 36, 18, 17.0f, 15.0f, 10.0f, 0.05556f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
     Moon umbriel(uranus, 0.22f, 36, 18, 6.0f, 35.0f, 0.8f);  // Umbriel - tamna površina
     Moon ariel(uranus, 0.2f, 36, 18, 5.0f, 30.0f, 0.5f);    // Ariel - ledena površina
     Moon miranda(uranus, 0.2f, 36, 18, 5.0f, 30.0f, 1.1f);    // Ariel - ledena površina
 
     //PLUTO
-    Planet pluto(0.25f, 36, 18, 10.0f, 10.0f, 12.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Planet pluto(0.25f, 36, 18, 10.0f, 10.0f, 12.0f, 0.29856f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
 
     //NEPTUNE
-    Planet neptune(0.50f, 36, 18, 16.0f, 14.0f, 13.0f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
+    Planet neptune(0.50f, 36, 18, 16.0f, 14.0f, 13.0f, 0.0108f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
     Moon triton(neptune, 0.22f, 36, 18, 9.0f, 55.0f, 0.5f);   // Triton - najveći mesec
 
 
@@ -520,10 +531,10 @@ int main() {
         
         //MERCURY
         mercury.Draw(planetProgram, mercuryTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
-        
+
         //VENUS
         venus.Draw(planetProgram, venusTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
-        
+
         //EARTH
         earth.Draw(planetProgram, earthTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
         moon.Draw(moonProgram, moonTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
@@ -560,6 +571,8 @@ int main() {
         neptune.Draw(planetProgram, neptuneTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
         triton.Draw(moonProgram, tritonTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
 
+        
+
         std::unordered_map<std::string, Planet*> planets = {
             {"mercury", &mercury},
             {"venus", &venus},
@@ -588,6 +601,11 @@ int main() {
             {"miranda", &miranda},         // Mesec Urana
             {"triton", &triton}            // Mesec Neptuna
         };
+
+        if (showOrbits)
+        {
+            drawOrbits(planets, orbitShaderProgram, viewMatrix, projectionMatrix);
+        }
 
         shouldShowDetails(triviaShaderProgram, sun, moons, planets);
 

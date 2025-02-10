@@ -3,9 +3,9 @@
 #include "Planet.h"
 
 
-Planet::Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance)
+Planet::Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance, float ecc)
     : radius(r), sectorCount(sectors), stackCount(stacks),
-    rotationSpeed(rotSpeed), orbitSpeed(orbSpeed), distanceFromSun(distance) {
+    rotationSpeed(rotSpeed), orbitSpeed(orbSpeed), distanceFromSun(distance), eccentricity(ecc) {
 
     // Generate sphere vertices and indices
     generateVertices();
@@ -13,6 +13,9 @@ Planet::Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed,
 
     // Setup OpenGL buffers and attributes
     setupMesh();
+
+    generateOrbit();
+    setupOrbitMesh();
 }
 
 
@@ -113,22 +116,17 @@ void Planet::setupMesh() {
 
 
 void Planet::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view, const glm::mat4& projection, float deltaTime, glm::vec3 cameraPos, float speedMultiplier) {
-    // Update rotation and orbit angles
+    // Ažuriranje ugla orbite i rotacije planete
     orbitAngle += orbitSpeed * deltaTime * speedMultiplier;
     if (orbitAngle > 360.0f) orbitAngle -= 360.0f;
 
     rotationAngle += rotationSpeed * deltaTime;
     if (rotationAngle > 360.0f) rotationAngle -= 360.0f;
 
-    // Compute the planet's position in its orbit
-    float orbitRadians = glm::radians(orbitAngle);
-    glm::vec3 position = glm::vec3(
-        cos(orbitRadians) * distanceFromSun,
-        0.0f,
-        sin(orbitRadians) * distanceFromSun
-    );
+    // Dobijanje pravilne pozicije planete u orbiti
+    glm::vec3 position = getPosition();
 
-    // Compute model transformation matrix
+    // Kreiranje model matrice
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, position); // Postavi planetu u orbitu
 
@@ -141,37 +139,97 @@ void Planet::Draw(GLuint shaderProgram, GLuint textureID, const glm::mat4& view,
     // Na kraju skaliraj model
     model = glm::scale(model, glm::vec3(radius));
 
-
-    // Use shader program
+    // Koristi šejder
     glUseProgram(shaderProgram);
 
-    // Send uniforms to shader
+    // Prosleđivanje uniform vrednosti u šejder
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniform3fv(glGetUniformLocation(shaderProgram, "cameraPos"), 1, glm::value_ptr(cameraPos));
 
-    // Bind texture
+    // Bindovanje teksture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
     glUniform1i(glGetUniformLocation(shaderProgram, "planetTexture"), 0);
 
-    // Bind VAO and draw
+    // Iscrtavanje planete
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, sphere_indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
 
+
 glm::vec3 Planet::getPosition() {
     float orbitRadians = glm::radians(orbitAngle);
-    return glm::vec3(
-        cos(orbitRadians) * distanceFromSun,
-        0.0f,
-        sin(orbitRadians) * distanceFromSun
-    );
+
+    // Pravilna eliptična orbita (poluvelika i polumana osa)
+    float semiMajorAxis = distanceFromSun;  // Poluvelika osa (a)
+    float semiMinorAxis = distanceFromSun * sqrt(1 - eccentricity * eccentricity); // Polumana osa (b)
+
+    // Izračunavanje eliptične pozicije
+    float x = cos(orbitRadians) * semiMajorAxis - semiMajorAxis * eccentricity; // Translacija da Sunce bude u žarištu
+    float z = sin(orbitRadians) * semiMinorAxis;
+
+    return glm::vec3(x, 0.0f, z);
 }
+
 
 float Planet::getRadius() const {
     return radius;
 }
+
+void Planet::generateOrbit() {
+    int numSegments = 100; // Broj tačaka za crtanje glatke elipse
+    float angleStep = 2.0f * M_PI / numSegments;
+
+    // Poluvelika i polumana osa elipse
+    float semiMajorAxis = distanceFromSun;  // Poluvelika osa (a)
+    float semiMinorAxis = distanceFromSun * sqrt(1 - eccentricity * eccentricity); // Polumana osa (b)
+
+    for (int i = 0; i < numSegments; i++) {
+        float angle = i * angleStep;
+        float x = cos(angle) * semiMajorAxis - semiMajorAxis * eccentricity; // Translacija da Sunce bude u žarištu
+        float z = sin(angle) * semiMinorAxis;
+
+        orbit_vertices.push_back(glm::vec3(x, 0.0f, z));
+    }
+}
+
+
+void Planet::setupOrbitMesh() {
+    glGenVertexArrays(1, &orbitVAO);
+    glGenBuffers(1, &orbitVBO);
+
+    glBindVertexArray(orbitVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, orbitVBO);
+    glBufferData(GL_ARRAY_BUFFER, orbit_vertices.size() * sizeof(glm::vec3), orbit_vertices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+
+void Planet::DrawOrbit(GLuint shaderProgram, const glm::mat4& view, const glm::mat4& projection) {
+    glUseProgram(shaderProgram);
+
+    // Kreiranje model matrice (osigurava da su orbite u istom prostoru kao planete)
+    glm::mat4 model = glm::mat4(1.0f);
+
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+    // Postavi boju orbite (uniform promenljiva u sejderu)
+    glm::vec3 orbitColor = glm::vec3(0.8f, 0.8f, 0.8f);
+    glUniform3fv(glGetUniformLocation(shaderProgram, "orbitColor"), 1, glm::value_ptr(orbitColor));
+
+    glBindVertexArray(orbitVAO);
+    glDrawArrays(GL_LINE_LOOP, 0, orbit_vertices.size()); // Iscrtavanje orbite
+    glBindVertexArray(0);
+}
+

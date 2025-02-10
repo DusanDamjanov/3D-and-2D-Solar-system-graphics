@@ -28,9 +28,19 @@ private:
     void generateIndices();
     void setupMesh();
 
+    std::vector<glm::vec3> orbit_vertices; // Tačke za orbitu
+    GLuint orbitVAO, orbitVBO; // OpenGL resursi za orbitu
+    float eccentricity;
+
+    void generateOrbit(); // Generisanje tačaka orbite
+    void setupOrbitMesh(); // Postavljanje OpenGL bafera
+
 public:
-    Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance);
+    Planet(float r, int sectors, int stacks, float rotSpeed, float orbSpeed, float distance, float ecc);
     ~Planet();
+
+    void DrawOrbit(GLuint shaderProgram, const glm::mat4& view, const glm::mat4& projection); // Crtanje orbite
+
 
     glm::vec3 getPosition();
 
