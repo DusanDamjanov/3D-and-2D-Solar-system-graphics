@@ -1,12 +1,8 @@
 #version 330 core
 
-// Ulaz iz vertex shader-a
 in vec2 TexCoord;
-
-// Izlazna boja fragmenta
 out vec4 FragColor;
 
-// Uniform promenljive
 uniform sampler2D asteroidTexture;
 uniform float glowIntensity; // Faktor svetljenja
 
@@ -14,9 +10,12 @@ void main() {
     // Učitavanje boje iz teksture
     vec4 texColor = texture(asteroidTexture, TexCoord);
     
-    // Dodaj emisivni efekat tako što pojačavamo svetlost
-    vec3 emissiveColor = texColor.rgb + vec3(glowIntensity, glowIntensity, glowIntensity);
-    
-    // Osiguravamo da boja ne prelazi 1.0
+    // Primena plave nijanse na asteroid
+    vec3 baseColor = mix(texColor.rgb, vec3(0.3, 0.5, 1.2), 0.8); 
+
+    // Dodavanje svetlećeg efekta
+    vec3 emissiveColor = baseColor + vec3(glowIntensity);
+
+    // Osiguravanje da vrednosti ostanu u granicama [0,1]
     FragColor = vec4(clamp(emissiveColor, 0.0, 1.0), texColor.a);
 }

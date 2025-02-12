@@ -11,6 +11,10 @@
 
 //TODO: Implementirajte Fongov model osvjetljenja sa suncem kao tackastim osvjetljenjem. [ovo preskoci za sada...imas dole FIXME2 koji objasnjava zasto]
 
+//[DONE]: Implementiraj asteroidne pojaseve u 3D sistemu
+
+//TODO: probaj da vidis pozadinu dal ce sljakati sa pozadinom nekom dal ce projekat bolje izgledati
+
 //------------------------------------------------------------------------------------------------------------------------------------------------
  
 
@@ -33,3 +37,4 @@
 //7️⃣ Uran	[DONE]
 //7️⃣ Pluton	[DONE]
 //8️⃣ Neptun	[DONE]
+//9	 Asteroidni pojasevi [DONE]

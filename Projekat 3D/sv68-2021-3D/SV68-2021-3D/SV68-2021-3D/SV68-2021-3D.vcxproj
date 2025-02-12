@@ -130,6 +130,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Asteroid.cpp" />
+    <ClCompile Include="AsteroidBelt.cpp" />
     <ClCompile Include="Moon.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="SaturnRing.cpp" />
@@ -142,8 +144,8 @@
     <None Include="asteroids.vert" />
     <None Include="details.frag" />
     <None Include="details.vert" />
-    <None Include="kuiper-oort.frag" />
-    <None Include="kuiper-oort.vert" />
+    <None Include="oort-cloud.frag" />
+    <None Include="oort-cloud.vert" />
     <None Include="moon.frag" />
     <None Include="moon.vert" />
     <None Include="orbit.frag" />
@@ -159,6 +161,7 @@
     <None Include="text.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="2k_asteroid.jpg" />
     <Image Include="ariel-tex.jpg" />
     <Image Include="callisto-tex.jpg" />
     <Image Include="deimos-tex.jpg" />
@@ -216,6 +219,8 @@
     <Font Include="LiberationSans-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asteroid.h" />
+    <ClInclude Include="AsteroidBelt.h" />
     <ClInclude Include="Moon.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="SaturnRing.h" />

@@ -1,5 +1,5 @@
 #define GLM_ENABLE_EXPERIMENTAL
-#define STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION
 
 #include "SV68-2021-3D.h"
 
@@ -7,11 +7,11 @@
 
 float speedMultiplier = 1.0;
 double lastKeyPressTime = 0.0;
-
+float lastFrame = 0.0f;
 int screenWidth = 1600, screenHeight = 800;
 bool showOrbits = false;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);  // Kamera gleda sa strane
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 15.0f); // Kamera bliže pojasu
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -82,6 +82,8 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
 
 
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
@@ -90,7 +92,6 @@ GLFWwindow* initializeOpenGL(int width, int height, const char* title) {
 
     return window;
 }
-
 // Funkcija za učitavanje šejdera
 std::string loadShaderSource(const char* filePath) {
     std::ifstream file(filePath);
@@ -144,49 +145,12 @@ GLuint createProgram(const char* vertexShaderPath, const char* fragmentShaderPat
 }
 
 
-
 glm::mat4 calculateCameraMatrix() {
     return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
 
 glm::mat4 calculateProjectionMatrix(int screenWidth, int screenHeight) {
     return glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-}
-
-// Funkcija za učitavanje teksture
-GLuint loadTexture(const char* filePath) {
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    // Postavke teksture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Učitavanje slike
-    stbi_set_flip_vertically_on_load(true); // Flipa teksturu ako je potrebno
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load(filePath, &width, &height, &nrChannels, 0);
-
-    if (data) {
-        GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
-
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        stbi_image_free(data);
-
-        //std::cout << "Texture Loaded Successfully: " << filePath << std::endl;
-        //std::cout << "Width: " << width << ", Height: " << height << ", Channels: " << nrChannels << std::endl;
-    }
-    else {
-        std::cerr << "Failed to load texture: " << filePath << std::endl;
-        return 0;
-    }
-
-    return textureID;
 }
 
 
@@ -224,7 +188,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     if (fov <= 1.0f) fov = 1.0f;
     if (fov >= 45.0f) fov = 45.0f;
 }
-
 //funkcija da proveri slucajne visestruke klikove
 bool isOneClick(double& lastKeyPressTime) {
     double debounceDelay = 0.5;
@@ -302,6 +265,41 @@ void processInput(GLFWwindow* window, float deltaTime) {
 }
 
 
+// Funkcija za učitavanje teksture
+GLuint loadTexture(const char* filePath) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Postavke teksture
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Učitavanje slike
+    stbi_set_flip_vertically_on_load(true); // Flipa teksturu ako je potrebno
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(filePath, &width, &height, &nrChannels, 0);
+
+    if (data) {
+        GLenum format = (nrChannels == 4) ? GL_RGBA : GL_RGB;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(data);
+
+        //std::cout << "Texture Loaded Successfully: " << filePath << std::endl;
+        //std::cout << "Width: " << width << ", Height: " << height << ", Channels: " << nrChannels << std::endl;
+    }
+    else {
+        std::cerr << "Failed to load texture: " << filePath << std::endl;
+        return 0;
+    }
+
+    return textureID;
+}
 //render fja za details prikaz planete
 void renderInfoBox(float x, float y, float width, float height, GLuint shaderProgram, const char* textureName) {
     GLuint texture = loadTexture(textureName);
@@ -323,13 +321,13 @@ void renderInfoBox(float x, float y, float width, float height, GLuint shaderPro
 
     // Verteksi za pravougaonik (prikazuje se u ekranskom prostoru)
     float vertices[6][4] = {
-        {x, y, 0.0f, 1.0f},  
-        {x, y - height, 0.0f, 0.0f}, 
+        {x, y, 0.0f, 1.0f},
+        {x, y - height, 0.0f, 0.0f},
         {x + width, y - height, 1.0f, 0.0f},
 
-        {x, y, 0.0f, 1.0f},  
+        {x, y, 0.0f, 1.0f},
         {x + width, y - height, 1.0f, 0.0f},
-        {x + width, y, 1.0f, 1.0f} 
+        {x + width, y, 1.0f, 1.0f}
     };
 
 
@@ -363,7 +361,7 @@ void renderInfoBox(float x, float y, float width, float height, GLuint shaderPro
 }
 
 void shouldShowDetails(GLuint shaderProgram, Sun& sun, std::unordered_map<std::string, Moon*> moons, 
-    std::unordered_map<std::string, Planet*> planets) {
+    std::unordered_map<std::string, Planet*> planets, std::unordered_map<std::string, AsteroidBelt*> asteroids) {
 
     float minDistance = 0.2f;
 
@@ -403,6 +401,21 @@ void shouldShowDetails(GLuint shaderProgram, Sun& sun, std::unordered_map<std::s
             return;
         }
     }
+    
+    for (const auto& pair : asteroids) {
+        const std::string& beltName = pair.first; 
+        AsteroidBelt& belt = *pair.second;             
+
+        if (belt.isInsideBelt(cameraPos)) {
+            std::string triviaPathStr = beltName + "-trivia.png";
+            const char* triviaPath = triviaPathStr.c_str();       
+
+            glDisable(GL_DEPTH_TEST);
+            renderInfoBox(-0.95f, 0.9f, 0.4f, 0.2f, shaderProgram, triviaPath);
+            glEnable(GL_DEPTH_TEST);
+            return;
+        }
+    }
 }
 
 void drawOrbits(std::unordered_map<std::string, Planet*> planets, GLuint shaderProgram, glm::mat4 viewMatrix, glm::mat4 projectionMatrix) {
@@ -411,6 +424,38 @@ void drawOrbits(std::unordered_map<std::string, Planet*> planets, GLuint shaderP
         planet.DrawOrbit(shaderProgram, viewMatrix, projectionMatrix);
     }
 }
+
+GLuint loadCubemap(std::vector<std::string> faces) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++) {
+        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
+        }
+        else {
+            std::cerr << "Failed to load cubemap texture: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+
+
+
+
 
 int main() {
     GLFWwindow* window = initializeOpenGL(screenWidth, screenHeight, "3D Suncev sistem");
@@ -428,6 +473,8 @@ int main() {
     GLuint ringProgram = createProgram("ring.vert", "ring.frag");
     GLuint triviaShaderProgram = createProgram("details.vert", "details.frag");
     GLuint orbitShaderProgram = createProgram("orbit.vert", "orbit.frag");
+    GLuint asteroidProgram = createProgram("asteroids.vert", "asteroids.frag");
+    GLuint oortCloudProgram = createProgram("oort-cloud.vert", "oort-cloud.frag");
 
 
     //===============================TEXTURES=====================================
@@ -443,6 +490,7 @@ int main() {
     GLuint uranusTextureID = loadTexture("uranus-tex.jpg");
     GLuint plutoTextureID = loadTexture("pluto-tex.jpg");
     GLuint neptuneTextureID = loadTexture("neptune-tex.jpg");
+    GLuint asteroidTextureID = loadTexture("2k_asteroid.jpg");
 
     //MOONS
     GLuint moonTextureID = loadTexture("moon-tex.jpg");
@@ -480,7 +528,6 @@ int main() {
     Moon phobos(mars, 0.18f, 36, 18, 15.0f, 80.0f, 0.2f);  // Fobos - manji i bliži Marsu
     Moon deimos(mars, 0.15f, 36, 18, 10.0f, 40.0f, 0.5f);  // Deimos - veći i dalje od Marsa
 
-    
     //JUPITER
     Planet jupiter(0.7f, 36, 18, 20.0f, 20.0f, 5.5f, 0.0581f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
     Moon io(jupiter, 0.2f, 36, 18, 15.0f, 150.0f, 0.8f);      // Io - blizu Jupitera, najbrži
@@ -508,8 +555,12 @@ int main() {
     Planet neptune(0.50f, 36, 18, 16.0f, 14.0f, 13.0f, 0.0108f); // (radius, sectors, stacks, rotationSpeed, orbitSpeed, distanceFromSun)
     Moon triton(neptune, 0.22f, 36, 18, 9.0f, 55.0f, 0.5f);   // Triton - najveći mesec
 
+    //ASTEROID BELTS
+    AsteroidBelt mainAsteroidBelt(200, 4.5f, 5.0f);             //Izmedju marsa i jupitera
+    AsteroidBelt kuiperBelt(700, 13.0f, 18.0f);                 //Iza neptuna
+    AsteroidBelt oortCloud(1200, 21.0f, 25.0f);                 //Najdalji pojas od sunca (zamrznut)
 
-    float lastFrame = 0.0f;
+
     while (!glfwWindowShouldClose(window)) {
        
         float currentFrame = glfwGetTime();
@@ -523,7 +574,6 @@ int main() {
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
         //[SPACE BODIES DRAWING]
         //SUN
@@ -571,7 +621,10 @@ int main() {
         neptune.Draw(planetProgram, neptuneTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos, speedMultiplier);
         triton.Draw(moonProgram, tritonTextureID, viewMatrix, projectionMatrix, deltaTime, speedMultiplier);
 
-        
+        //ASTEROIDS
+        mainAsteroidBelt.Draw(asteroidProgram, asteroidTextureID, viewMatrix, projectionMatrix, cameraPos);
+        kuiperBelt.Draw(asteroidProgram, asteroidTextureID, viewMatrix, projectionMatrix, cameraPos);
+        oortCloud.Draw(oortCloudProgram, asteroidTextureID, viewMatrix, projectionMatrix, cameraPos);
 
         std::unordered_map<std::string, Planet*> planets = {
             {"mercury", &mercury},
@@ -602,12 +655,18 @@ int main() {
             {"triton", &triton}            // Mesec Neptuna
         };
 
+        std::unordered_map<std::string, AsteroidBelt*> asteroids = {
+            {"main asteroid belt", &mainAsteroidBelt}, 
+            {"kuiper belt", &kuiperBelt},          
+            {"oort cloud", &oortCloud},          
+        };
+
         if (showOrbits)
         {
             drawOrbits(planets, orbitShaderProgram, viewMatrix, projectionMatrix);
         }
 
-        shouldShowDetails(triviaShaderProgram, sun, moons, planets);
+        shouldShowDetails(triviaShaderProgram, sun, moons, planets, asteroids);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

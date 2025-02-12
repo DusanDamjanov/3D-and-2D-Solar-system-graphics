@@ -66,6 +66,12 @@
     <ClCompile Include="SaturnRing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AsteroidBelt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Asteroid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -81,10 +87,10 @@
     <None Include="asteroids.vert">
       <Filter>Source Files\Shader Files\Asteroids</Filter>
     </None>
-    <None Include="kuiper-oort.frag">
+    <None Include="oort-cloud.frag">
       <Filter>Source Files\Shader Files\Asteroids</Filter>
     </None>
-    <None Include="kuiper-oort.vert">
+    <None Include="oort-cloud.vert">
       <Filter>Source Files\Shader Files\Asteroids</Filter>
     </None>
     <None Include="moon.frag">
@@ -111,17 +117,17 @@
     <None Include="ring.frag">
       <Filter>Source Files\Shader Files\Planets</Filter>
     </None>
-    <None Include="orbit.frag">
-      <Filter>Source Files\Shader Files\recycle bin</Filter>
-    </None>
-    <None Include="orbit.vert">
-      <Filter>Source Files\Shader Files\recycle bin</Filter>
-    </None>
     <None Include="text.frag">
       <Filter>Source Files\Shader Files\recycle bin</Filter>
     </None>
     <None Include="text.vert">
       <Filter>Source Files\Shader Files\recycle bin</Filter>
+    </None>
+    <None Include="orbit.frag">
+      <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="orbit.vert">
+      <Filter>Source Files\Shader Files\Planets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -281,6 +287,9 @@
     <Image Include="saturn-ring-tex.jpg">
       <Filter>Resource Files\Planets</Filter>
     </Image>
+    <Image Include="2k_asteroid.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="LiberationSans-Regular.ttf">
@@ -301,6 +310,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SaturnRing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AsteroidBelt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Asteroid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
