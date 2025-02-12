@@ -135,6 +135,7 @@
     <ClCompile Include="Moon.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="SaturnRing.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Sun.cpp" />
     <ClCompile Include="SV68-2021-3D.cpp" />
     <ClCompile Include="todo.cpp" />
@@ -142,6 +143,8 @@
   <ItemGroup>
     <None Include="asteroids.frag" />
     <None Include="asteroids.vert" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vert" />
     <None Include="details.frag" />
     <None Include="details.vert" />
     <None Include="oort-cloud.frag" />
@@ -163,6 +166,12 @@
   <ItemGroup>
     <Image Include="2k_asteroid.jpg" />
     <Image Include="ariel-tex.jpg" />
+    <Image Include="bkg1_back.png" />
+    <Image Include="bkg1_bot.png" />
+    <Image Include="bkg1_front.png" />
+    <Image Include="bkg1_left.png" />
+    <Image Include="bkg1_right.png" />
+    <Image Include="bkg1_top.png" />
     <Image Include="callisto-tex.jpg" />
     <Image Include="deimos-tex.jpg" />
     <Image Include="earth-tex.jpg" />
@@ -224,6 +233,7 @@
     <ClInclude Include="Moon.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="SaturnRing.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Sun.h" />
     <ClInclude Include="SV68-2021-3D.h" />
   </ItemGroup>

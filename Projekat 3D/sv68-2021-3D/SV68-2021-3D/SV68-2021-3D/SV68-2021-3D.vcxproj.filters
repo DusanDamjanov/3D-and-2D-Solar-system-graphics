@@ -46,6 +46,15 @@
     <Filter Include="Source Files\Shader Files\recycle bin">
       <UniqueIdentifier>{6c7dcd48-fc8d-4b39-bb51-a7e46ee317eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Background">
+      <UniqueIdentifier>{b3d68097-4ae7-4b0c-a0cd-01be390b8962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Trivia">
+      <UniqueIdentifier>{c8cfa397-7cb0-4f8c-8769-ddd164889155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader Files\Background">
+      <UniqueIdentifier>{d58b4a9b-6f37-4c56-9b86-17d29c39b27a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SV68-2021-3D.cpp">
@@ -72,15 +81,12 @@
     <ClCompile Include="Asteroid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="details.frag">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
-    <None Include="details.vert">
-      <Filter>Source Files\Shader Files</Filter>
-    </None>
     <None Include="asteroids.frag">
       <Filter>Source Files\Shader Files\Asteroids</Filter>
     </None>
@@ -128,6 +134,18 @@
     </None>
     <None Include="orbit.vert">
       <Filter>Source Files\Shader Files\Planets</Filter>
+    </None>
+    <None Include="details.frag">
+      <Filter>Source Files\Shader Files\Trivia</Filter>
+    </None>
+    <None Include="details.vert">
+      <Filter>Source Files\Shader Files\Trivia</Filter>
+    </None>
+    <None Include="skybox.vert">
+      <Filter>Source Files\Shader Files\Background</Filter>
+    </None>
+    <None Include="skybox.frag">
+      <Filter>Source Files\Shader Files\Background</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -290,6 +308,24 @@
     <Image Include="2k_asteroid.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="bkg1_back.png">
+      <Filter>Resource Files\Background</Filter>
+    </Image>
+    <Image Include="bkg1_bot.png">
+      <Filter>Resource Files\Background</Filter>
+    </Image>
+    <Image Include="bkg1_front.png">
+      <Filter>Resource Files\Background</Filter>
+    </Image>
+    <Image Include="bkg1_left.png">
+      <Filter>Resource Files\Background</Filter>
+    </Image>
+    <Image Include="bkg1_right.png">
+      <Filter>Resource Files\Background</Filter>
+    </Image>
+    <Image Include="bkg1_top.png">
+      <Filter>Resource Files\Background</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="LiberationSans-Regular.ttf">
@@ -316,6 +352,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Asteroid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

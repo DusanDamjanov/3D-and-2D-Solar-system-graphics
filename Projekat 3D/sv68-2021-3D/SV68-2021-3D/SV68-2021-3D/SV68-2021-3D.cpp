@@ -1,5 +1,4 @@
 #define GLM_ENABLE_EXPERIMENTAL
-//#define STB_IMAGE_IMPLEMENTATION
 
 #include "SV68-2021-3D.h"
 
@@ -425,21 +424,22 @@ void drawOrbits(std::unordered_map<std::string, Planet*> planets, GLuint shaderP
     }
 }
 
-GLuint loadCubemap(std::vector<std::string> faces) {
+GLuint loadCubemap() {
+    std::vector<std::string> pictures = { "bkg1_back.png", "bkg1_bot.png", "bkg1_front.png", "bkg1_left.png", "bkg1_right.png", "bkg1_top.png" };
     GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
     int width, height, nrChannels;
-    for (unsigned int i = 0; i < faces.size(); i++) {
-        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+    for (unsigned int i = 0; i < pictures.size(); i++) {
+        unsigned char* data = stbi_load(pictures[i].c_str(), &width, &height, &nrChannels, 0);
         if (data) {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             stbi_image_free(data);
         }
         else {
-            std::cerr << "Failed to load cubemap texture: " << faces[i] << std::endl;
+            std::cerr << "Failed to load cubemap texture: " << pictures[i] << std::endl;
             stbi_image_free(data);
         }
     }
@@ -454,9 +454,6 @@ GLuint loadCubemap(std::vector<std::string> faces) {
 }
 
 
-
-
-
 int main() {
     GLFWwindow* window = initializeOpenGL(screenWidth, screenHeight, "3D Suncev sistem");
     if (!window) return -1;
@@ -467,6 +464,7 @@ int main() {
 
 
     //===============================PROGRAMS=====================================
+    GLuint skyBoxProgram = createProgram("skybox.vert", "skybox.frag");
     GLuint sunProgram = createProgram("sun.vert", "sun.frag");
     GLuint planetProgram = createProgram("planet.vert", "planet.frag");
     GLuint moonProgram = createProgram("moon.vert", "moon.frag");
@@ -476,8 +474,9 @@ int main() {
     GLuint asteroidProgram = createProgram("asteroids.vert", "asteroids.frag");
     GLuint oortCloudProgram = createProgram("oort-cloud.vert", "oort-cloud.frag");
 
-
     //===============================TEXTURES=====================================
+    GLuint skyBoxTextureID = loadCubemap();
+
     //PLANETS
     GLuint sunTextureID = loadTexture("sun-tex.jpg");
     GLuint mercuryTextureID = loadTexture("mercury-tex.jpg");
@@ -509,6 +508,7 @@ int main() {
     GLuint tritonTextureID = loadTexture("triton-tex.jpg");
 
 
+    SkyBox skyBox(skyBoxProgram, skyBoxTextureID);
     //===============================SPACE BODIES INITS=====================================
     //SUN
     Sun sun(1.0f, 36, 18);
@@ -575,7 +575,10 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f); 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
         //[SPACE BODIES DRAWING]
+        skyBox.renderSkybox(viewMatrix, projectionMatrix);
+
         //SUN
         sun.Draw(sunProgram, sunTextureID, viewMatrix, projectionMatrix, deltaTime, cameraPos);
         

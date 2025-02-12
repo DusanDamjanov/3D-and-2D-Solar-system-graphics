@@ -30,6 +30,7 @@
 #include "SaturnRing.h"
 #include "AsteroidBelt.h"
 #include "Asteroid.h"
+#include "SkyBox.h"
 
 // Deklaracija funkcije za učitavanje teksture
 GLuint loadTexture(const char* filePath);

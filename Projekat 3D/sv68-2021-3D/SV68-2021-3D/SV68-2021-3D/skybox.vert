@@ -8,5 +8,5 @@ uniform mat4 projection;
 void main() {
     TexCoords = aPos;
     vec4 pos = projection * view * vec4(aPos, 1.0);
-    gl_Position = pos.xyww; // čuva dubinu na 1.0
+    gl_Position = pos.xyww;  // Važno za ispravan prikaz skyboxa
 }
